@@ -1,0 +1,179 @@
+<umba-mm-module-info>
+
+    <!-- !!!RELNOTES
+
+        -------------------------------------------------------------------------------
+
+        v 1.0 
+
+          * Много всего втащено из разных проектов, как для ПК, так и для MCU.
+
+          * Библиотека задокументирована.
+
+          * Появилась идея о версионировании модулей/библиотек.
+
+            Пока только в виде коментариев в шапке модуля.
+
+            Описание изменений добавляется сверху.
+
+            Текущая версия - самая верхняя в данном списке.
+
+            Надо будет для начала добавить тэг <version> для указания текущей версии, 
+            чтобы UMBA-MM не спотыкалась на нём. Обработку придумаем потом.
+
+            Как вариант, для гитовых модулей при коммите (при пуше на сервак, в смысле) можно 
+            извлекать номер версии из umba-mm-module-info.xml и клеить тэг типа "UMBA_MM-MODULE-VERSION-VXX.YY"
+
+            А потом как-нибудь и прикручу версионирование к UMBA-MM'у
+
+            Извлекать текущую версию - либо из тега <version>, либо из комента "!!!RELNOTES".
+            Если оба в наличии - сравнивать, и ругаться, если что.
+
+            Примерный синтаксис как добавлять модули конкретной версии:
+
+            umba-mm module add MOD1_NAME<2.19> MOD2_NAME<4.35>
+
+            или круглые скобки:
+
+            umba-mm module add MOD1_NAME(2.19) MOD2_NAME(4.35)
+
+            Угловые в командной строке не гут.
+
+            В зависимости от того, какого типа модуль, umba-mm вытащит нужную версию. Как - надо будет продумать и допиливать.
+
+      -->
+
+    <options>
+      <options-list type="cpp_defines">UMBA_STRICT, UMBA_MM</options-list>
+    </options>
+
+    <options>
+      <!--options-list type="cpp_includes">.</options-list-->
+    </options>
+
+    <options match-var="Toolchain" match-to="keil-v*/armcc-v*">
+      <options-list type="cpp_options">--cpp11</options-list>
+    </options>
+
+    <options match-var="Toolchain" match-to="keil-v*/armclang-v*,*/gcc*">
+      <options-list type="cpp_options">-std=c++11</options-list>
+    </options>
+
+    <!-- Supported since Visual C++ 2013 Update 3 -->
+    <options match-var="Toolchain" match-to="msvs-v201*/msc_v*">
+      <options-list type="cpp_options">/std:c++14</options-list>
+    </options>
+
+    <file>
+      <file-path>_readme.txt</file-path>
+    </file>
+
+    <file>
+      <file-path>alloca.h</file-path>
+    </file>
+
+    <file>
+      <file-path>assert.h</file-path>
+    </file>
+
+    <file>
+      <file-path>autolock.h</file-path>
+    </file>
+
+    <file>
+      <file-path>critical_section.h</file-path>
+    </file>
+
+    <file>
+      <file-path>critical_section.cpp</file-path>
+    </file>
+
+    <file>
+      <file-path>basic_interfaces.h</file-path>
+    </file>
+
+    <file>
+      <file-path>basic_interfaces_impl.h</file-path>
+    </file>
+
+    <file>
+      <file-path>bits.h</file-path>
+    </file>
+
+    <file>
+      <file-path>bits_fmt.h</file-path>
+    </file>
+
+    <file>
+      <file-path>const_string.h</file-path>
+    </file>
+
+    <file>
+      <file-path>debug_helpers.h</file-path>
+    </file>
+
+    <file>
+      <file-path>errors.h</file-path>
+    </file>
+
+    <file>
+      <file-path>format_utils.h</file-path>
+    </file>
+
+    <file>
+      <file-path>hr_counter.h</file-path>
+    </file>
+
+    <file>
+      <file-path>i_char_writer.h</file-path>
+    </file>
+
+    <file>
+      <file-path>interface.h</file-path>
+    </file>
+
+    <file>
+      <file-path>parse_utils.h</file-path>
+    </file>
+
+    <file>
+      <file-path>perf_counters.h</file-path>
+    </file>
+
+    <file>
+      <file-path>preprocessor.h</file-path>
+    </file>
+
+    <file>
+      <file-path>properties.h</file-path>
+    </file>
+
+    <file>
+      <file-path>stl.h</file-path>
+    </file>
+
+    <file>
+      <file-path>time_service.h</file-path>
+    </file>
+
+    <file>
+      <file-path>time_service.cpp</file-path>
+    </file>
+
+    <file>
+      <file-path>umba.h</file-path>
+    </file>
+
+    <file>
+      <file-path>user_literals.h</file-path>
+    </file>
+
+    <file>
+      <file-path>variadic_helpers.h</file-path>
+    </file>
+
+    <file>
+      <file-path>winconhelpers.h</file-path>
+    </file>
+
+</umba-mm-module-info>

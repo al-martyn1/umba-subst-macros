@@ -1,0 +1,1 @@
+@call make_distr.bat > make_distr.log 2>&1

@@ -1,0 +1,23 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <UMBA_QTROOT>$(MSVC2019_QTROOT)</UMBA_QTROOT>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='Win32'">
+    <QT_ROOT>$(UMBA_QTROOT)\$(UMBA_MSVCVER)</QT_ROOT>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Platform)'=='x64'">
+    <QT_ROOT>$(UMBA_QTROOT)\$(UMBA_MSVCVER)_64</QT_ROOT>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <QTDIR>$(QT_ROOT)</QTDIR><!-- compat -->
+    <QT_INC_DIR>$(QT_ROOT)\include</QT_INC_DIR>
+    <QT_LIB_DIR>$(QT_ROOT)\lib</QT_LIB_DIR>
+    <QT_LIB_PATH>$(QT_LIB_DIR)</QT_LIB_PATH><!-- compat -->
+    <QT_INC_PATH>$(QT_INC_DIR)</QT_INC_PATH><!-- compat -->
+  </PropertyGroup>
+
+</Project>
