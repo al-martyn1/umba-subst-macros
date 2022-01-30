@@ -2,13 +2,16 @@
 
 #include <string>
 #include <vector>
+#include <list>
 #include <map>
 
 #include "umba/program_location.h"
 #include "umba/enum_helpers.h"
 #include "umba/flag_helpers.h"
 
-#include "regex_helpers.h"
+#include "umba/macros.h"
+#include "umba/macro_helpers.h"
+
 
 //----------------------------------------------------------------------------
 
@@ -46,29 +49,47 @@ struct AppConfig
 
     //------------------------------
     static const unsigned                    ofEmptyOptionFlags      = 0x0000;
-    static const unsigned                    ofNoOutput              = 0x0010; // Do not actually write output files
-    static const unsigned                    ofMain                  = 0x0020; // Print only main files (whish contains main or other entry point)
-    static const unsigned                    ofHtml                  = 0x0040; // Print output in html format
-    static const unsigned                    ofSkipUndocumented      = 0x0080; // Skip undocumented files
-    static const unsigned                    ofRemovePath            = 0x0100; // Remove path from output names
+    // static const unsigned                    ofNoOutput              = 0x0010; // Do not actually write output files
+    // static const unsigned                    ofMain                  = 0x0020; // Print only main files (whish contains main or other entry point)
+    // static const unsigned                    ofHtml                  = 0x0040; // Print output in html format
+    // static const unsigned                    ofSkipUndocumented      = 0x0080; // Skip undocumented files
+    // static const unsigned                    ofRemovePath            = 0x0100; // Remove path from output names
+
+    static const unsigned                    ofKeepUnknown           = 0x0001; // umba::macros::keepUnknownVars ;
+    static const unsigned                    ofConditionals          = 0x0002; // umba::macros::conditionAllowed;
+    static const unsigned                    ofArgs                  = 0x0004; // umba::macros::argsAllowed;
+
+
+    static const unsigned                    ofOverwrite             = 0x0010;
+    static const unsigned                    ofStdin                 = 0x0022;
+    static const unsigned                    ofStdout                = 0x0040;
+
+/*
+const int substFlagsDefault                   = smf_Default                        ;
+const int argsAllowed                         = smf_ArgsAllowed                    ;
+const int conditionAllowed                    = smf_ConditionAllowed               ;
+const int appendVarValueAllowed               = smf_AppendVarValueAllowed          ;
+const int setVarValueSubstitutionAllowed      = smf_SetVarValueSubstitutionAllowed ;
+const int changeDot                           = smf_changeDot                      ;
+const int changeSlash                         = smf_changeSlash                    ;
+const int uppercaseNames                      = smf_uppercaseNames                 ;
+const int lowercaseNames                      = smf_lowercaseNames                 ;
+const int disableRecursion                    = smf_DisableRecursion               ;
+const int keepUnknownVars                     = smf_KeepUnknownVars                ;
+*/
 
     //------------------------------
-    std::map<std::string, std::string>       macros; // не используем
+    std::map<std::string, std::string>       macros;
+    std::list< std::string >                 macrosOrder;
+    std::map<std::string,bool>               expandedMacros;
 
-    std::map< std::string,std::set<std::string> >  entryNames; // не используем
 
-
-
-    //------------------------------
-    std::vector<std::string>                 excludeFilesMaskList;
-
-    std::vector<std::string>                 scanPaths;
-    //std::string                              outputPath;
-    std::string                              outputName;
-
-    unsigned                                 optionFlags = 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
+    unsigned                                 optionFlags = ofKeepUnknown; // 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
 
     VerbosityLevel                           verbosityLevel = VerbosityLevel::normal;
+
+    std::string                              inputFilename;
+    std::string                              outputFilename;
 
     //------------------------------
 
@@ -118,11 +139,12 @@ struct AppConfig
     {
         switch(ofFlag)
         {
-            case ofNoOutput              : return "Disable writting outputs";
-            case ofMain                  : return "Print only main filess";
-            case ofHtml                  : return "Print output in html format";
-            case ofSkipUndocumented      : return "Skip undocumented";
-            case ofRemovePath            : return "Remove path from file names in output";
+            case ofKeepUnknown    : return "Keep unknown macros";
+            case ofConditionals   : return "Allow conditional macros";
+            case ofArgs           : return "Allow macro arguments";
+            case ofOverwrite      : return "Overwrite output file";
+            case ofStdin          : return "Use STDIN as unput";
+            case ofStdout         : return "Use STDOUT as output";
 
             default                      : return "Multiple flags taken!!!";
         }
@@ -132,14 +154,15 @@ struct AppConfig
                 void setOpt##opt( bool q ) { ofSet(of##opt,q);      }  \
                 bool getOpt##opt( )  const { return ofGet(of##opt); }
 
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(NoOutput)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Main)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Html)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(SkipUndocumented)
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(RemovePath)
-    
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(KeepUnknown )
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Conditionals)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Args        )
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Overwrite)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Stdin       )
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Stdout      )
+    // UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT()
 
-    void setOptQuet( bool q ) { setVerbosityLevel(VerbosityLevel::quet);  }
+    void setOptQuet( bool q ) { q ? setVerbosityLevel(VerbosityLevel::quet) : setVerbosityLevel(VerbosityLevel::normal); }
     //bool getOptQuet( )  const { return testVerbosity(VerbosityLevel::quet); }
 
     bool getOptShowConfig( )  const { return testVerbosity(VerbosityLevel::config); }
@@ -148,32 +171,6 @@ struct AppConfig
 
 
 
-    //------------------------------
-    std::string getScanRelativeName( std::string name ) const
-    {
-        for(const auto &path : scanPaths)
-        {
-            if (umba::filename::isSubPathName(path, name, &name, '/'))
-                break;
-        }
-
-        return name;
-    }
-
-    #if 0
-    std::string getOutputRelativePath( std::string path ) const
-    {
-        // if (umba::filename::isSubPathName(outputPath, path, &path))
-        //     return path;
-        return std::string();
-    }
-
-    std::string getOutputPath( std::string path ) const
-    {
-        //return umba::filename::makeCanonical( umba::filename::appendPath(outputPath, path) );
-        return std::string();
-    }
-    #endif
     //------------------------------
 
 
@@ -186,6 +183,58 @@ struct AppConfig
         return s;
     }
 
+    bool isMacroExpanded( const std::string &name ) const
+    {
+        auto it = expandedMacros.find(name);
+        if (it==expandedMacros.end())
+            return false;
+
+        return it->second;
+    }
+
+    int getMacrosSubstitutionFlags( ) const
+    {
+        int msFlags = 0;
+
+        if (optionFlags&ofKeepUnknown)
+            msFlags |= umba::macros::keepUnknownVars;
+
+        if (optionFlags&ofConditionals)
+            msFlags |= umba::macros::conditionAllowed;
+
+        if (optionFlags&ofConditionals)
+            msFlags |= umba::macros::argsAllowed;
+
+        return msFlags;
+    }
+
+    void setMacro( const std::string &name, std::string val, bool deffered )
+    {
+        auto orderIt = std::find(macrosOrder.begin(), macrosOrder.end(), name);
+        if (orderIt!=macrosOrder.end())
+           macrosOrder.erase(orderIt);
+
+        macrosOrder.push_back(name);
+
+        if (deffered)
+        {
+            expandedMacros[name] = false;
+            macros[name]         = val;
+            return;
+        }
+
+        val = umba::macros::substMacros( val
+                                       , umba::macros::MacroTextFromMapOrEnvRef<std::string>(macros, true /* envAllowed */ )
+                                       , getMacrosSubstitutionFlags()
+                                       );
+
+
+        expandedMacros[name] = true;
+        macros[name]         = val;
+
+    }
+
+
     template<typename StreamType>
     StreamType& print( StreamType &s ) const
     {
@@ -194,73 +243,37 @@ struct AppConfig
 
         //------------------------------
 
-        s << "Output Name    : " << outputName << "\n"; // endl;
+        //s << "Output Name    : " << outputName << "\n"; // endl;
 
         s << "\n";
 
         s << "Option Flags   :\n";
-        s << "    " << getOptNameString(ofNoOutput)            << ": " << getOptValAsString(optionFlags&ofNoOutput) << "\n";
-        s << "    " << getOptNameString(ofMain)                << ": " << getOptValAsString(optionFlags&ofMain) << "\n";
-        s << "    " << getOptNameString(ofHtml)                << ": " << getOptValAsString(optionFlags&ofHtml) << "\n";
-        s << "    " << getOptNameString(ofSkipUndocumented)    << ": " << getOptValAsString(optionFlags&ofSkipUndocumented) << "\n";
-        s << "    " << getOptNameString(ofRemovePath)          << ": " << getOptValAsString(optionFlags&ofRemovePath) << "\n";
-
+        s << "    " << getOptNameString(ofKeepUnknown )            << ": " << getOptValAsString(optionFlags&ofKeepUnknown ) << "\n";
+        s << "    " << getOptNameString(ofConditionals)            << ": " << getOptValAsString(optionFlags&ofConditionals) << "\n";
+        s << "    " << getOptNameString(ofArgs        )            << ": " << getOptValAsString(optionFlags&ofArgs        ) << "\n";
+        s << "    " << getOptNameString(ofOverwrite   )            << ": " << getOptValAsString(optionFlags&ofOverwrite   ) << "\n";
+        //s << "    " << getOptNameString(ofStdin       )            << ": " << getOptValAsString(optionFlags&ofStdin       ) << "\n";
+        //s << "    " << getOptNameString(ofStdout      )            << ": " << getOptValAsString(optionFlags&ofStdout      ) << "\n";
+        //s << "    " << getOptNameString(of)            << ": " << getOptValAsString(optionFlags&of) << "\n";
         s << "\n";
 
         //------------------------------
 
         s << "\n";
-        s << "Scan Paths:\n";
-        for(auto scanPath : scanPaths)
+        s << "Macros:\n";
+        for(const auto& [name,val] : macros)
         {
-            s << "    " << scanPath << " (" << umba::filename::makeCanonical(scanPath) << ")\n";
+            s << "    " << name << " - [" << val << "], expanded: " << (isMacroExpanded(name) ? "true" : "false") << "\n";
         }
 
         s << "\n";
 
         //------------------------------
 
-        /*
-        if (macros.empty())
-            s << "Macros : <EMPTY>";
-        else
-        {
-            s << "Macros:\n";
-            for(auto [key,val] : macros)
-            {
-                s << "    '" << key << "' : '" << val << "'\n";
-            }
-        }
+        // appConfig.macros             = macros        ;
+        // appConfig.macrosOrder        = macrosOrder   ;
+        // appConfig.expandedMacros     = expandedMacros;
 
-        s << "\n";
-        */
-        //------------------------------
-
-        s << "Exclude File Masks:\n";
-        for(auto excludeFileMask : excludeFilesMaskList)
-	    {
-            auto regexStr = expandSimpleMaskToEcmaRegex(excludeFileMask);
-            s << "    '" << excludeFileMask;
-
-            bool isRaw = false;
-            if (umba::string_plus::starts_with<std::string>(excludeFileMask,umba::regex_helpers::getRawEcmaRegexPrefix<std::string>()))
-                isRaw = true;
-
-            if (regexStr==excludeFileMask || isRaw)
-                s << "'\n";
-            else
-            {
-                s << "', corresponding mECMA regexp: '"
-                  << regexStr
-                  << "'\n";
-            }
-        }
-
-        s << "\n";
-        
-        //------------------------------
-
-        
 
         return s;
     }
@@ -270,30 +283,24 @@ struct AppConfig
     {
         AppConfig appConfig;
 
-        //appConfig.macros             = macros;
-        //appConfig.keepGeneratedFiles = keepGeneratedFiles;
-        appConfig.scanPaths          = scanPaths;
-        appConfig.outputName         = outputName;
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
 
-        appConfig.entryNames         = entryNames;
-        if (appConfig.entryNames.empty())
+        appConfig.inputFilename      = inputFilename ;
+        appConfig.outputFilename     = outputFilename;
+
+        auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(macros, true /* envAllowed */ );
+
+        for(auto orderIt = macrosOrder.begin(); orderIt!=macrosOrder.end(); ++orderIt)
         {
-            appConfig.entryNames["main"].insert("int");
-            appConfig.entryNames["main"].insert("void");
-        }
+            appConfig.macrosOrder.push_back(*orderIt);
 
+            auto mit = macros.find(*orderIt);
+            if (mit==macros.end())
+                continue;
 
-        if (appConfig.scanPaths.empty())
-            appConfig.scanPaths.push_back(umba::filesys::getCurrentDirectory<std::string>());
-
-        for(auto excludeFileMask: excludeFilesMaskList)
-        {
-            if (umba::string_plus::starts_with(excludeFileMask,umba::regex_helpers::getRawEcmaRegexPrefix<std::string>()))
-                appConfig.excludeFilesMaskList.push_back(excludeFileMask); // keep regex as is
-            else
-                appConfig.excludeFilesMaskList.push_back( umba::filename::normalizePathSeparators(excludeFileMask,'/') );
+            appConfig.macros[*orderIt] = umba::macros::substMacros( mit->second, getter, getMacrosSubstitutionFlags() );
+            appConfig.expandedMacros[*orderIt] = true;
         }
 
         return appConfig;

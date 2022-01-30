@@ -952,6 +952,20 @@ public:
         return *this;
     }
 
+    SimpleFormatter& operator<<( const char* t )
+    {
+        SimpleFormatterOutputSentry sentry(*this);
+        formatValue(t);
+        return *this;
+    }
+
+    SimpleFormatter& operator<<( char* t )
+    {
+        SimpleFormatterOutputSentry sentry(*this);
+        formatValue((const char*)t);
+        return *this;
+    }
+
     //-------------------
     SimpleFormatter& operator<<( omanip::SimpleManip manip )
     {

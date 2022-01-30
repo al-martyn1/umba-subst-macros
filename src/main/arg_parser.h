@@ -52,7 +52,9 @@ int operator()( const std::string                               &a           //!
     if (opt.isOption())
     {
         std::string errMsg;
-        int intVal;
+        int         intVal;
+        bool        boolVal;
+        std::string strVal;
 
         if (opt.name.empty())
         {
@@ -182,127 +184,6 @@ int operator()( const std::string                               &a           //!
 
         //------------
 
-        // else if ( opt.isOption("output-path") || opt.isOption("output-root") ||  /* opt.isOption("output") ||  */ opt.isOption('O') || opt.setParam("PATH")
-        //        || opt.setDescription("Set output root path")
-        //         )
-        // {
-        //     if (argsParser.hasHelpOption) return 0;
-        //     
-        //     if (!opt.hasArg())
-        //     {
-        //         LOG_ERR_OPT<<"output path not taken (--output-path)\n";
-        //         return -1;
-        //     }
-        //  
-        //     auto optArg = umba::macros::substMacros(opt.optArg,umba::macros::MacroTextFromMapOrEnv<std::string>(appConfig.macros),umba::macros::keepUnknownVars);
-        //     appConfig.outputPath = makeAbsPath(optArg);
-        //     return 0;
-        // }
-        //  
-        else if ( opt.isOption("exclude-files") || opt.isOption('X') || opt.setParam("MASK,...")
-               || opt.setDescription("Exclude files from parsing. The 'MASK' parameter is a simple file mask, where '*' "
-                                     "means any number of any chars, and '?' means exact one of any char. In addition, "
-                                     "symbol '^' in front and/or back of the mask means that the mask will be bound to beginning/ending "
-                                     "of the tested file name.\n"
-                                     "Also, regular expresion syntax allowed in form '" + 
-                                     umba::regex_helpers::getRawEcmaRegexPrefix<std::string>() + "YOURREGEX'. The regular expresions supports\n"
-                                     "See also: C++ Modified ECMA Script regular expression grammar - https://en.cppreference.com/w/cpp/regex/ecmascript"
-                                    )
-                )
-        {
-            if (argsParser.hasHelpOption) return 0;
-            
-            if (!opt.hasArg())
-            {
-                LOG_ERR_OPT<<"exclude files mask not taken (--exclude-files)\n";
-                return -1;
-            }
-
-            std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
-            appConfig.excludeFilesMaskList.insert(appConfig.excludeFilesMaskList.end(), lst.begin(), lst.end());
-
-            return 0;
-        }
-
-        else if (opt.isOption("no-output") || opt.isOption("dry-run") || opt.setDescription("Do not actually write output files. Simulation mode. Behave normally, but do not copy/creater/update any files."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptNoOutput(true);
-                return 0;
-            }
-
-        else if (opt.isOption("main") || opt.setDescription("Print only main files (whish contains main or other entry point)."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptMain(true);
-                return 0;
-            }
-
-        else if (opt.isOption("remove-path") || opt.setDescription("Remove path from file names while ghenerating output."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptRemovePath(true);
-                return 0;
-            }
-
-        else if (opt.isOption("html") || opt.setDescription("Print output in html format."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptHtml(true);
-                return 0;
-            }
-        else if (opt.isOption("skip-undocumented") || opt.isOption('U') || opt.setDescription("Print output in html format."))
-            {
-                if (argsParser.hasHelpOption) return 0;
-                appConfig.setOptSkipUndocumented(true);
-                return 0;
-            }
-
-        else if ( opt.isOption("path") || opt.isOption("scan") || opt.isOption('P') || opt.setParam("PATH")
-               || opt.setDescription("Add path to scan path list"))
-        {
-            if (argsParser.hasHelpOption) return 0;
-            
-            if (!opt.hasArg())
-            {
-                LOG_ERR_OPT<<"Adding path to scan path list requires argument (--path)\n";
-                return -1;
-            }
-
-            auto optArg = umba::macros::substMacros(opt.optArg,umba::macros::MacroTextFromMapOrEnv<std::string>(appConfig.macros),umba::macros::keepUnknownVars);
-            appConfig.scanPaths.push_back(makeAbsPath(optArg));
-
-            return 0;
-        }
-
-        else if ( opt.isOption("entry-name") || opt.isOption('E') || opt.setParam("NAME")
-               || opt.setDescription("Add name to lookup as entry point"))
-        {
-            if (argsParser.hasHelpOption) return 0;
-            
-            if (!opt.hasArg())
-            {
-                LOG_ERR_OPT<<"Adding entry name requres argument (--entry-name)\n";
-                return -1;
-            }
-
-            std::vector< std::string > lst = umba::string_plus::split(opt.optArg, ',');
-            // if (lst.size()<2)
-            //     lst.push_back("int"); // default return type of entry point is int
-
-            std::vector< std::string >::const_iterator lit = lst.begin();
-            std::string entryName = *lit; ++lit;
-
-            // appConfig.entryNames[entryName].insert(lit, lst.end()); // лень разбираться
-            auto &retTypes = appConfig.entryNames[entryName];
-            for(; lit!=lst.end(); ++lit) retTypes.insert(*lit);
-
-            return 0;
-        }
-
-
-        //------------
-
         else if ( opt.isOption("autocomplete-install") 
                || opt.setDescription("Install autocompletion to bash"
                                      #if defined(WIN32) || defined(_WIN32)
@@ -330,6 +211,112 @@ int operator()( const std::string                               &a           //!
             return umba::command_line::autocompletionInstaller( pCol, opt, pCol->getPrintHelpStyle(), false, [&]( bool bErr ) -> decltype(auto) { return bErr ? LOG_ERR_OPT : LOG_MSG_OPT; } );
         }
 
+        else if ( opt.setParam("?MODE",true) 
+               || opt.isOption("keep") || opt.isOption('K')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Keep unknown macros (do not replace them to empty string)"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            appConfig.setOptKeepUnknown(boolVal);
+            return 0;
+        }
+
+        else if ( opt.setParam("?MODE",false)
+               || opt.isOption("conditions") || opt.isOption('C')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Allow conditional macros substitution"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            appConfig.setOptConditionals(boolVal);
+            return 0;
+        }
+
+        else if ( opt.setParam("?MODE",false)
+               || opt.isOption("parameterized") || opt.isOption('P')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Allow parameterized macros substitution"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            appConfig.setOptArgs(boolVal);
+            return 0;
+        }
+
+        else if ( opt.setParam("?MODE",true)
+               || opt.isOption("overwrite") || opt.isOption('Y') 
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Allow overwrite existing file"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            appConfig.setOptOverwrite(boolVal);
+            return 0;
+        }
+
+        else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString )
+               || opt.isOption("set") || opt.isOption('S')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Set macro NAME with the text TEXT"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            std::string name, val;
+            umba::string_plus::split_to_pair( strVal, name, val, ':' );
+            appConfig.setMacro( name, val, false /* deffered */ );
+            return 0;
+        }
+
+        else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString)
+               || opt.isOption("deffer") || opt.isOption("set-deffered") || opt.isOption('D')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Set macro NAME with the text TEXT (deffered expansion)"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            std::string name, val;
+            umba::string_plus::split_to_pair( strVal, name, val, ':' );
+            appConfig.setMacro( name, val, true /* deffered */ );
+            return 0;
+        }
+
         else if (opt.isHelpStyleOption())
         {
             // Job is done in isHelpStyleOption
@@ -352,7 +339,11 @@ int operator()( const std::string                               &a           //!
                 if (pCol && pCol->isNormalPrintHelpStyle() && argsParser.argsNeedHelp.empty())
                 {
                     auto helpText = opt.getHelpOptionsString();
-                    std::cout<<"Usage: " << programLocationInfo.exeFullName << " [OPTIONS] input_file [output_file]\n\nOptions:\n\n"<<helpText;
+                    std::cout << "Usage: " << programLocationInfo.exeFullName 
+                              << " [OPTIONS] [input_file [output_file]]\n"
+                              << "  If output_file not taken, STDOUT used\n"
+                              << "  If input_file not taken, STDIN used\n"
+                              << "\nOptions:\n\n"<<helpText;
                 }
                 
                 if (pCol) // argsNeedHelp
@@ -423,18 +414,22 @@ int operator()( const std::string                               &a           //!
 
     //appConfig.clangCompileFlagsTxtFilename.push_back(makeAbsPath(a));
 
-    appConfig.outputName = makeAbsPath(a);
+    if (appConfig.inputFilename.empty())
+        appConfig.inputFilename = makeAbsPath(a);
 
-/*    
-    if (inputFilename.empty())
-        inputFilename = a;
-    else
-        outputFilename = a;
-*/
+    else if (appConfig.outputFilename.empty())
+        appConfig.outputFilename = makeAbsPath(a);
+
+    else 
+    {
+        LOG_ERR_OPT<<"input/output file names already taken\n";
+        return -1;
+    }
 
     return 0;
 
-}
+} //
+
 
 }; // struct ArgParser
 

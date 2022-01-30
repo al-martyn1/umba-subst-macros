@@ -22,7 +22,7 @@
 @set DISTR_ROOT=.distr
 @if not exist %DISTR_ROOT% mkdir %DISTR_ROOT%
 
-@set DISTR_NAME=umba-brief-scanner
+@set DISTR_NAME=umba-subst-macros
 @set MAIN_EXE_NAME=%DISTR_NAME%
 @set BUILD_OUTPUT_ROOT=.out\msvc2019
 

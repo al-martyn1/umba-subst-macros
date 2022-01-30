@@ -1330,6 +1330,11 @@ struct CommandLineOption
 
             return true;
         }
+        else
+        {
+            // val = optArg;
+            // return true;
+        }
 
         return false;
     
@@ -1459,6 +1464,8 @@ struct CommandLineOption
         // need parsing
 
         val.clear();
+
+        val = optArg;
 
         return true;
     }

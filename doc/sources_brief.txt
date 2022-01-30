@@ -2,4 +2,4 @@ Brief Description for Project Sources
 -------------------------------------
 
 qt_stub.cpp                      - Стаб, для того, чтобы windeployqt подсосал нужный рантайм для MSVC - а то совсем без Qt он не работает
-umba-subst-macros.cpp            - Утилита umba-brief-scanner
+umba-subst-macros.cpp            - Утилита umba-subst-macros - подстановка макросов вида $(MacroName) во входном файле с записью в выходной

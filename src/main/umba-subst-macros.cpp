@@ -1,5 +1,5 @@
 /*! \file
-    \brief Утилита umba-brief-scanner
+    \brief Утилита umba-subst-macros - подстановка макросов вида $(MacroName) во входном файле с записью в выходной
  */
 
 #include "umba/umba.h"
@@ -11,7 +11,9 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
-// #include <cstdio>
+#include <cstdio>
+#include <cerrno>
+#include <cstring>
 #include <filesystem>
 
 #include "umba/debug_helpers.h"
@@ -25,7 +27,6 @@
 
 
 #include "utils.h"
-#include "brief_info.h"
 
 
 umba::StdStreamCharWriter coutWriter(std::cout);
@@ -43,9 +44,7 @@ bool logSourceInfo = false;
 
 #include "log.h"
 #include "utils.h"
-#include "scan_folders.h"
 
-//#include "scan_sources.h"
 
 umba::program_location::ProgramLocation<std::string>   programLocationInfo;
 
@@ -85,7 +84,7 @@ int main(int argc, char* argv[])
     if (umba::isDebuggerPresent())
     {
         argsParser.args.clear();
-        argsParser.args.push_back("@..\\tests\\data\\test01.rsp");
+        argsParser.args.push_back("@..\\tests\\macros.rsp");
         // argsParser.args.push_back(umba::string_plus::make_string(""));
         // argsParser.args.push_back(umba::string_plus::make_string(""));
         // argsParser.args.push_back(umba::string_plus::make_string(""));
@@ -116,189 +115,79 @@ int main(int argc, char* argv[])
     appConfig = appConfig.getAdjustedConfig(programLocationInfo);
     //pAppConfig = &appConfig;
 
+    if (!appConfig.outputFilename.empty())
+        appConfig.setOptQuet(true);
+
     if (appConfig.getOptShowConfig())
     {
         printInfoLogSectionHeader(logMsg, "Actual Config");
+        argsParser.printBuiltinFileNames( logMsg );
         // logMsg << appConfig;
         appConfig.print(logMsg) << "\n";
     }
 
-    if (appConfig.outputName.empty())
+    //-------------
+
+
+
+    std::istream *pIn = &std::cin;
+
+    std::ifstream inFile;
+    if (!appConfig.inputFilename.empty())
     {
-        LOG_ERR_OPT << "output name not taken" << endl;
-        return 1;
-    }
-
-
-
-    std::vector<std::string> foundFiles, excludedFiles;
-    std::set<std::string>    foundExtentions;
-    scanFolders(appConfig, foundFiles, excludedFiles, foundExtentions);
-
-
-    if (appConfig.testVerbosity(VerbosityLevel::detailed))
-    {
-        if (!foundFiles.empty())
-            printInfoLogSectionHeader(logMsg, "Files for Processing");
-
-        for(const auto & name : foundFiles)
+        inFile.open( appConfig.inputFilename, std::ios_base::in );
+        if (!inFile)
         {
-            logMsg << name << endl;
-        }
-
-
-        if (!excludedFiles.empty())
-            printInfoLogSectionHeader(logMsg, "Files Excluded from Processing");
-
-        for(const auto & name : excludedFiles)
-        {
-            logMsg << name << endl;
-        }
-
-
-        if (!foundExtentions.empty())
-            printInfoLogSectionHeader(logMsg, "Found File Extentions");
-
-        for(const auto & ext : foundExtentions)
-        {
-            if (ext.empty())
-                logMsg << "<EMPTY>" << endl;
-            else
-                logMsg << "." << ext << endl;
-        }
-    }
-
-
-    if (appConfig.testVerbosity(VerbosityLevel::detailed))
-        printInfoLogSectionHeader(logMsg, "Processing");
-
-    std::map<std::string, BriefInfo>  briefInfo;
-
-
-    for(const auto & filename : foundFiles)
-    {
-        // logMsg << name << endl;
-        std::vector<char> filedata;
-        if (!umba::filesys::readFile( filename, filedata ))
-        {
-            LOG_WARN_OPT("open-file-failed") << "failed to open file '" << filename << "'\n";
-            continue;
-        }
-
-        BriefInfo  info;
-        bool bFound = findBriefInfo( filedata, appConfig.entryNames, info );
-        briefInfo[filename] = info;
-
-        if (appConfig.testVerbosity(VerbosityLevel::detailed))
-        {
-            logMsg << (info.briefFound ? '+' : '-')
-                   << (info.entryPoint ? 'E' : ' ')
-                   << "    " << filename
-                   << "\n";
-        }
-
-    }
-
-    std::ofstream infoStream;
-    if (!appConfig.getOptNoOutput())
-    {
-
-        // if (!createDirectory(path))
-        // {
-        //     LOG_WARN_OPT("create-dir-failed") << "failed to create directory: " << path << endl;
-        //     continue;
-        // }
-
-        infoStream.open( appConfig.outputName, std::ios_base::out | std::ios_base::trunc );
-        if (!infoStream)
-        {
-            LOG_WARN_OPT("create-file-failed") << "failed to create output file: " << appConfig.outputName << endl;
+            LOG_ERR_OPT<<"failed to open input file '"<<appConfig.inputFilename<<"'\n";
             return 1;
         }
+
+        pIn = &inFile;
     }
 
+    std::istream &in = *pIn;
 
-    std::string titleStr = "Brief Description for Project Sources";
-    std::string sepLine  = "-------------------------------------";
 
-    if (!appConfig.getOptHtml())
+
+    std::ostream *pOut = &std::cout;
+
+    std::ofstream outFile;
+    if (!appConfig.outputFilename.empty())
     {
-        infoStream << titleStr << "\n" << sepLine << "\n\n";
-    }
-    else
-    {
-        infoStream << "<!DOCTYPE html>\n<html>\n";
-        infoStream << "<head>\n<title>" << titleStr << "</title>\n</head>\n";
-        infoStream << "<body>\n";
-    }
+        std::string openMode = "w";
+        if (!appConfig.getOptOverwrite())
+            openMode.append("x");
 
-
-    auto printInfo = [&]( bool bMain )
-    {
-        //std::map<std::string, BriefInfo>
-        for( const auto& [name,info] : briefInfo)
+        errno = 0;
+        std::FILE* pFile = std::fopen( appConfig.outputFilename.c_str(), openMode.c_str() );
+        if (!pFile)
         {
-            if (info.entryPoint!=bMain)
-                continue;
-
-            if (appConfig.getOptSkipUndocumented())
-            {
-                if (!info.briefFound)
-                    continue;
-            }
-
-            umba::StdStreamCharWriter infoWriter(infoStream);
-            umba::SimpleFormatter uinfoStream(&infoWriter);
-
-            auto relName = appConfig.getScanRelativeName(name);
-
-            if (appConfig.getOptRemovePath())
-                relName = umba::filename::getFileName( relName );
-
-            if (!appConfig.getOptHtml())
-            {
-                uinfoStream << width(32) << left << relName << " - " << info.infoText << "\n";
-                //infoStream << relName << " - " << info.infoText << "\n";
-            }
-            else
-            {
-                //TODO: !!! Add HTML output here
-            }
-        
+            auto errCode = errno;
+            LOG_ERR_OPT<<"failed to open output file '"<<appConfig.outputFilename<<"' - " << std::string(std::strerror(errCode)) << "\n";
+            return 1;
         }
 
-    };
-
-
-    printInfo(true);
-        
-    if (!appConfig.getOptMain())
-    {
-        // print all
-
-        if (!appConfig.getOptHtml())
+        outFile.open( appConfig.outputFilename, std::ios_base::out | std::ios_base::trunc );
+        std::fclose(pFile);
+        if (!outFile)
         {
-            infoStream << "\n";
-        }
-        else
-        {
-            //TODO: !!! Add HTML line break here
+            LOG_ERR_OPT<<"failed to open output file '"<<appConfig.outputFilename<<"'\n";
+            return 1;
         }
 
-        printInfo(false);
-
+        pOut = &outFile;
     }
 
+    std::ostream &out = *pOut;
 
-    if (appConfig.getOptHtml())
+
+    auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(appConfig.macros, false /* envAllowed */ );
+
+    std::string line;
+    while( std::getline( in, line ) )
     {
-        infoStream << "<body>\n";
-        infoStream << "<html>\n";
+        out << umba::macros::substMacros( line, getter, appConfig.getMacrosSubstitutionFlags() ) << std::endl;
     }
-
-
-    if (appConfig.testVerbosity(VerbosityLevel::normal))
-        logMsg << "Done";
 
 
     return 0;
