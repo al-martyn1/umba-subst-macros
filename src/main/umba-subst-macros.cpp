@@ -55,6 +55,7 @@
 
     // Детектим сборку с DLL рантаймом
     // std::fopen в DLL рантайме падает при наличии опции "x"
+    // Или надо обновить рантайм - https://docs.microsoft.com/en-us/cpp/windows/universal-crt-deployment?view=msvc-170
     #if defined(_DLL)
         #if defined(UMBA_SUBST_MACROS_USE_FOPEN)
             #undef UMBA_SUBST_MACROS_USE_FOPEN
