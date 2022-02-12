@@ -32,3 +32,4 @@
 *.app
 /.vs
 /_prj_msvc2019/*.user
+/.distr
