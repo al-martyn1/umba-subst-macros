@@ -145,6 +145,40 @@ struct MacroTextFromMapOrEnvRef : public IMacroTextGetter<StringType>
 
 
 //----------------------------------------------------------------------------
+template<typename StreamType, typename StringType>
+StreamType& printMacros( StreamType &oss, const StringType &prefix, const std::map<StringType,StringType> &macros )
+{
+    std::map<StringType,StringType>::const_iterator it = macros.begin();
+
+    std::size_t maxName = 0;
+
+    // Scan for max name len
+
+    for(; it!=macros.end(); ++it)
+    {
+        if (it->first.size()>maxName)
+            maxName = it->first.size();
+    }
+
+
+    it = macros.begin();
+
+    for(; it!=macros.end(); ++it)
+    {
+        auto fillStr = StringType( maxName - it->first.size() + 1, ' ');
+        oss << prefix << it->first << fillStr << " : " << it->second << "\n";
+    }
+
+    return oss;
+}
+
+
+//----------------------------------------------------------------------------
+
+
+
+
+//----------------------------------------------------------------------------
 
 } // namespace macros
 } // namespace umba

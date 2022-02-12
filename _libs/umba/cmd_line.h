@@ -2587,13 +2587,13 @@ struct ArgsParser
         using namespace umba::program_location;
         
         if (builtinsOptions&BuiltinOptionsLocationFlag::appGlobal   )
-            s << "    AppGlobal : " << programLocationInfo.getBuiltinOptionsFilename( BuiltinOptionsLocationFlag::appGlobal ) << "\n";
+            s << "  AppGlobal  : " << programLocationInfo.getBuiltinOptionsFilename( BuiltinOptionsLocationFlag::appGlobal ) << "\n";
 
         if (builtinsOptions&BuiltinOptionsLocationFlag::customGlobal)
-            s << "    UserGlobal: " << programLocationInfo.getBuiltinOptionsFilename( BuiltinOptionsLocationFlag::customGlobal ) << "\n";
+            s << "  UserGlobal : " << programLocationInfo.getBuiltinOptionsFilename( BuiltinOptionsLocationFlag::customGlobal ) << "\n";
 
         if (builtinsOptions&BuiltinOptionsLocationFlag::userLocal   )
-            s << "    UserLocal : " << programLocationInfo.getBuiltinOptionsFilename( BuiltinOptionsLocationFlag::userLocal ) << "\n";
+            s << "  UserLocal  : " << programLocationInfo.getBuiltinOptionsFilename( BuiltinOptionsLocationFlag::userLocal ) << "\n";
 
         // if (builtinsOptions)
         //     s << "\n";

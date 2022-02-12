@@ -248,10 +248,10 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
         s << "\n";
 
         s << "Option Flags   :\n";
-        s << "    " << getOptNameString(ofKeepUnknown )            << ": " << getOptValAsString(optionFlags&ofKeepUnknown ) << "\n";
-        s << "    " << getOptNameString(ofConditionals)            << ": " << getOptValAsString(optionFlags&ofConditionals) << "\n";
-        s << "    " << getOptNameString(ofArgs        )            << ": " << getOptValAsString(optionFlags&ofArgs        ) << "\n";
-        s << "    " << getOptNameString(ofOverwrite   )            << ": " << getOptValAsString(optionFlags&ofOverwrite   ) << "\n";
+        s << "  " << getOptNameString(ofKeepUnknown )            << ": " << getOptValAsString(optionFlags&ofKeepUnknown ) << "\n";
+        s << "  " << getOptNameString(ofConditionals)            << ": " << getOptValAsString(optionFlags&ofConditionals) << "\n";
+        s << "  " << getOptNameString(ofArgs        )            << ": " << getOptValAsString(optionFlags&ofArgs        ) << "\n";
+        s << "  " << getOptNameString(ofOverwrite   )            << ": " << getOptValAsString(optionFlags&ofOverwrite   ) << "\n";
         //s << "    " << getOptNameString(ofStdin       )            << ": " << getOptValAsString(optionFlags&ofStdin       ) << "\n";
         //s << "    " << getOptNameString(ofStdout      )            << ": " << getOptValAsString(optionFlags&ofStdout      ) << "\n";
         //s << "    " << getOptNameString(of)            << ": " << getOptValAsString(optionFlags&of) << "\n";
@@ -261,10 +261,12 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
 
         s << "\n";
         s << "Macros:\n";
-        for(const auto& [name,val] : macros)
-        {
-            s << "    " << name << " - [" << val << "], expanded: " << (isMacroExpanded(name) ? "true" : "false") << "\n";
-        }
+
+        umba::macros::printMacros(s, umba::string_plus::make_string<std::string>("  "), macros);
+        // for(const auto& [name,val] : macros)
+        // {
+        //     s << "    " << name << " - [" << val << "], expanded: " << (isMacroExpanded(name) ? "true" : "false") << "\n";
+        // }
 
         s << "\n";
 
@@ -286,9 +288,10 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
 
-        auto macrosWithLocations     = programLocation.mergeProgramLocationMacros(macros);
+        // auto macrosWithLocations     = programLocation.mergeProgramLocationMacros(macros);
+        appConfig.macros             = programLocation.mergeProgramLocationMacros(macros);
 
-        auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(macrosWithLocations, true /* envAllowed */ );
+        auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(appConfig.macros, true /* envAllowed */ );
 
         for(auto orderIt = macrosOrder.begin(); orderIt!=macrosOrder.end(); ++orderIt)
         {
