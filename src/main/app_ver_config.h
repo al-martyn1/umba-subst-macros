@@ -1,5 +1,5 @@
 std::string appFullName   = "Umba Subst Macros";
-std::string appVersion    = "0.1";
+std::string appVersion    = "1.0";
 std::string appCommitHash;  //UNDONE
 std::string appBuildDate  = __DATE__;
 std::string appBuildTime  = __TIME__;

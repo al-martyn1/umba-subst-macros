@@ -25,6 +25,8 @@
     #include <Shlobj.h>
 #else
     #include <unistd.h>
+    #include <sys/types.h>
+    #include <pwd.h>
 #endif
 
 
@@ -758,10 +760,13 @@ StringType getCurrentDrive()
 //----------------------------------------------------------------------------
 #if defined(WIN32) || defined(_WIN32)
 
+    //------------------------------
+
     //! Получение домашнего каталога текущего пользователя в винде
     template<typename StringType>
     StringType getUserFolderPathFromWinApi(); // { return throw std::runtime_error("getUserFolderPathFromWinApi: not specified"); StringType(); }
 
+    //! Получение домашнего каталога текущего пользователя в винде. Специализация
     template<>
     std::string getUserFolderPathFromWinApi<std::string>()
     {
@@ -774,6 +779,7 @@ StringType getCurrentDrive()
         return std::string();
     }
     
+    //! Получение домашнего каталога текущего пользователя в винде. Специализация
     template<>
     std::wstring getUserFolderPathFromWinApi<std::wstring>()
     {
@@ -785,35 +791,80 @@ StringType getCurrentDrive()
     
         return std::wstring();
     }
+
+
+    //------------------------------
+
+    //! Получение временного каталога (текущего пользователя или как придётся) в винде
+    template<typename StringType>
+    StringType getTempFolderPathFromWinApi(); // { return throw std::runtime_error("getUserFolderPathFromWinApi: not specified"); StringType(); }
+
+    //! Получение временного каталога (текущего пользователя или как придётся) в винде. Специализация
+    template<>
+    std::string getTempFolderPathFromWinApi<std::string>()
+    {
+        char buf[4096];
     
+        const std::size_t bufSize = sizeof(buf) / sizeof(buf[0]);
+
+        DWORD res = GetTempPathA( bufSize, &buf[0]);
+        // Если 0 - это ошибка, если > размера буфера - не влезло - сорян, если не хватило 4Кб под имя фолдера, что-то пошло явно не так
+        if (!res || res>bufSize)
+            return std::string("C:\\Temp");
+
+        return std::string( &buf[0], res );
+    }
+
+    //! Получение временного каталога (текущего пользователя или как придётся) в винде. Специализация
+    template<>
+    std::wstring getTempFolderPathFromWinApi<std::wstring>()
+    {
+        wchar_t buf[4096];
+    
+        const std::size_t bufSize = sizeof(buf) / sizeof(buf[0]);
+
+        DWORD res = GetTempPathW( bufSize, &buf[0]);
+        // Если 0 - это ошибка, если > размера буфера - не влезло - сорян, если не хватило 4Кб под имя фолдера, что-то пошло явно не так
+        if (!res || res>bufSize)
+            return std::wstring(L"C:\\Temp");
+
+        return std::wstring( &buf[0], res );
+    }
+
 #endif // defined(WIN32) || defined(_WIN32)
 
+//----------------------------------------------------------------------------
 
 
+
+
+//----------------------------------------------------------------------------
 //! Получение домашнего каталога текущего пользователя
 template<typename StringType> inline
 StringType getCurrentUserHomeDirectory()
 {
     #if defined(WIN32) || defined(_WIN32)
 
-    StringType res;
-    if (umba::env::getVar(umba::string_plus::make_string<StringType>("USERPROFILE"), res))
-    {
-        return res;
-    }
-
-    return getUserFolderPathFromWinApi<StringType>();
+        StringType res;
+        if (umba::env::getVar(umba::string_plus::make_string<StringType>("USERPROFILE"), res))
+        {
+            return res;
+        }
+       
+        return getUserFolderPathFromWinApi<StringType>();
 
     #else
 
-    //UNDONE: Переделать !!!
-    // https://stackoverflow.com/questions/2910377/get-home-directory-in-linux
+        //TODO: Переделать !!!
+        // https://stackoverflow.com/questions/2910377/get-home-directory-in-linux
+       
+        StringType res;
+        if (umba::env::getVar(make_string<StringType>("HOME"), res))
+        {
+            return res;
+        }
 
-    StringType res;
-    if (umba::env::getVar(make_string<StringType>("HOME"), res))
-    {
-        return res;
-    }
+        return umba::string_plus::make_string<StringType>(getpwuid(getuid())->pw_dir);
 
     #endif
 
@@ -821,6 +872,30 @@ StringType getCurrentUserHomeDirectory()
 }
 
 //----------------------------------------------------------------------------
+//! Получение TEMP каталога
+template<typename StringType> inline
+StringType getTempFolderPath()
+{
+    #if defined(WIN32) || defined(_WIN32)
+
+        return getTempFolderPathFromWinApi<StringType>();
+
+    #else
+
+        // Пытаемся найти юзерский TEMP
+        StringType res;
+        if (umba::env::getVar(make_string<StringType>("TMPDIR"), res))
+        {
+            return res;
+        }
+
+        return make_string<StringType>("/tmp");
+
+    #endif
+}
+
+//----------------------------------------------------------------------------
+
 
 
 
@@ -839,6 +914,8 @@ StringType getCurrentUserHomeDirectory()
 
 } // namespace filesys
 } // namespace umba
+
+// umba::filesys::
 
 
 

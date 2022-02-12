@@ -286,10 +286,9 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
 
-        appConfig.inputFilename      = inputFilename ;
-        appConfig.outputFilename     = outputFilename;
+        auto macrosWithLocations     = programLocation.mergeProgramLocationMacros(macros);
 
-        auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(macros, true /* envAllowed */ );
+        auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(macrosWithLocations, true /* envAllowed */ );
 
         for(auto orderIt = macrosOrder.begin(); orderIt!=macrosOrder.end(); ++orderIt)
         {
@@ -302,6 +301,9 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
             appConfig.macros[*orderIt] = umba::macros::substMacros( mit->second, getter, getMacrosSubstitutionFlags() );
             appConfig.expandedMacros[*orderIt] = true;
         }
+
+        appConfig.inputFilename      = umba::macros::substMacros( inputFilename , getter, getMacrosSubstitutionFlags() );
+        appConfig.outputFilename     = umba::macros::substMacros( outputFilename, getter, getMacrosSubstitutionFlags() );
 
         return appConfig;
     }
