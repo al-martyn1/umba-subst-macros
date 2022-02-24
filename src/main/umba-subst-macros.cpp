@@ -176,8 +176,11 @@ int main(int argc, char* argv[])
     appConfig = appConfig.getAdjustedConfig(programLocationInfo);
     //pAppConfig = &appConfig;
 
-    if (appConfig.outputFilename.empty())
+    if (appConfig.isStdoutUsed())
+    {
         appConfig.setOptQuet(true);
+    }
+
 
     if (!argsParser.quet)
     {
@@ -195,17 +198,135 @@ int main(int argc, char* argv[])
     //-------------
 
 
+    auto macroGetter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(appConfig.macros, false /* envAllowed */ );
+
+
     // if (appConfig.testVerbosity(VerbosityLevel::detailed))
     //     LOG_MSG_OPT<<"initializing input stream" << endl;
 
+    for( const auto &fp : appConfig.filesToProcess )
+    {
+        // auto in  = umba::macros::substMacros( fp.first  , getter, getMacrosSubstitutionFlags() );
+        // auto out = umba::macros::substMacros( fp.second , getter, getMacrosSubstitutionFlags() );
+
+        std::istream *pIn = &std::cin;
+       
+        std::ifstream inFile;
+        if (!fp.first.empty())
+        {
+            inFile.open( fp.first, std::ios_base::in );
+            if (!inFile)
+            {
+                LOG_WARN_OPT("input-not-exist")<<"failed to open input file '"<<fp.first<<"'\n";
+                continue; // return 1;
+            }
+       
+            pIn = &inFile;
+        }
+       
+        std::istream &in = *pIn;
+
+
+
+        std::ostream *pOut = &std::cout;
+
+        std::ofstream outFile;
+        if (!fp.second.empty())
+        {
+            #if defined(UMBA_SUBST_MACROS_USE_FOPEN)
+       
+                // Это - не работает. Падает при сборке в Release (MSVC2019)
+                // Хз, почему
+              
+                if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                    LOG_MSG_OPT<<"opening output file" << endl;
+              
+                std::string openMode = "w";
+                if (!appConfig.getOptOverwrite())
+                    openMode.append("x"); // This flag forces the function to fail if the file exists, instead of overwriting it.
+              
+                if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                    LOG_MSG_OPT<<"try to create file '" << fp.second << "', open mode: '" << openMode << "'" << endl;
+              
+                //errno = 0;
+                std::FILE* pFile = std::fopen( fp.second.c_str(), openMode.c_str() );
+              
+                if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                    LOG_MSG_OPT<<"got pFile: " << pFile << endl;
+              
+                if (!pFile)
+                {
+                    auto errCode = errno;
+                    LOG_WARN_OPT("output-open-failed")<<"failed to open output file '"<<fp.second<<"' - " << std::string(std::strerror(errCode)) << "\n";
+                    continue; // return 1;
+                }
+              
+                if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                    LOG_MSG_OPT<<"try to open file for writting" << endl;
+              
+                outFile.open( fp.second, std::ios_base::out | std::ios_base::trunc );
+              
+                if (pFile)
+                    std::fclose(pFile);
+              
+                if (!outFile)
+                {
+                    LOG_WARN_OPT("output-open-failed")<<"failed to open output file '"<<fp.second<<"'\n";
+                    continue; // return 1;
+                }
+              
+                if (appConfig.testVerbosity(VerbosityLevel::detailed))
+                    LOG_MSG_OPT<<"output file opened successfully" << endl;
+       
+            #else
+       
+                std::filesystem::path outputFilenamePath = fp.second;
+                if (std::filesystem::exists(outputFilenamePath) && !appConfig.getOptOverwrite())
+                {
+                    auto errCode = errno;
+                    LOG_WARN_OPT("output-open-failed")<<"failed to open output file '"<<fp.second<<"' - file already exists\n";
+                    continue; // return 1;
+                }
+               
+                outFile.open( fp.second, std::ios_base::out | std::ios_base::trunc );
+               
+                if (!outFile)
+                {
+                    LOG_WARN_OPT("output-open-failed")<<"failed to open output file '"<<fp.second<<"'\n";
+                    continue; // return 1;
+                }
+       
+            #endif
+       
+            pOut = &outFile;
+       
+        }
+
+        std::ostream &out = *pOut;
+
+        
+        // std::pair<std::string,std::string>       rawSubstitutions;
+
+        std::size_t lineNo = 0;
+        std::string line;
+        while( std::getline( in, line ) )
+        {
+            ++lineNo;
+            // if (appConfig.testVerbosity(VerbosityLevel::detailed))
+            //     LOG_MSG_OPT<<"processing input line #" << lineNo << endl;
+            out << umba::macros::substMacros( line, macroGetter, appConfig.getMacrosSubstitutionFlags() ) << std::endl;
+        }
+
+
+    }
+
+
+    #if 0
     std::istream *pIn = &std::cin;
 
     std::ifstream inFile;
     if (!appConfig.inputFilename.empty())
     {
-        // if (appConfig.testVerbosity(VerbosityLevel::detailed))
-        //     LOG_MSG_OPT<<"opening input file" << endl;
-
         inFile.open( appConfig.inputFilename, std::ios_base::in );
         if (!inFile)
         {
@@ -219,9 +340,6 @@ int main(int argc, char* argv[])
     std::istream &in = *pIn;
 
 
-
-    // if (appConfig.testVerbosity(VerbosityLevel::detailed))
-    //     LOG_MSG_OPT<<"initializing output stream" << endl;
 
     std::ostream *pOut = &std::cout;
 
@@ -299,21 +417,23 @@ int main(int argc, char* argv[])
 
     std::ostream &out = *pOut;
 
+    #endif
+
     // if (appConfig.testVerbosity(VerbosityLevel::detailed))
     //     LOG_MSG_OPT<<"ready to process input" << endl;
 
-    auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(appConfig.macros, false /* envAllowed */ );
-
-    std::size_t lineNo = 0;
-    std::string line;
-    while( std::getline( in, line ) )
-    {
-        ++lineNo;
-        // if (appConfig.testVerbosity(VerbosityLevel::detailed))
-        //     LOG_MSG_OPT<<"processing input line #" << lineNo << endl;
-
-        out << umba::macros::substMacros( line, getter, appConfig.getMacrosSubstitutionFlags() ) << std::endl;
-    }
+    // auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(appConfig.macros, false /* envAllowed */ );
+    //  
+    // std::size_t lineNo = 0;
+    // std::string line;
+    // while( std::getline( in, line ) )
+    // {
+    //     ++lineNo;
+    //     // if (appConfig.testVerbosity(VerbosityLevel::detailed))
+    //     //     LOG_MSG_OPT<<"processing input line #" << lineNo << endl;
+    //  
+    //     out << umba::macros::substMacros( line, getter, appConfig.getMacrosSubstitutionFlags() ) << std::endl;
+    // }
 
 
     return 0;

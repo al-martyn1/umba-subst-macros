@@ -38,3 +38,12 @@ StreamType& printInfoLogSectionHeader( StreamType &s, const char* secCaption )
 
 //----------------------------------------------------------------------------
 
+inline
+std::string substRawText( std::string text, const std::vector< std::pair<std::string,std::string> >  &rawSubstitutions )
+{
+    std::vector< std::string::size_type > positions;
+
+
+
+
+}

@@ -4,6 +4,8 @@
 #include <vector>
 #include <list>
 #include <map>
+#include <utility>
+#include <algorithm>
 
 #include "umba/program_location.h"
 #include "umba/enum_helpers.h"
@@ -61,8 +63,11 @@ struct AppConfig
 
 
     static const unsigned                    ofOverwrite             = 0x0010;
-    static const unsigned                    ofStdin                 = 0x0022;
+    static const unsigned                    ofStdin                 = 0x0020;
     static const unsigned                    ofStdout                = 0x0040;
+
+    static const unsigned                    ofBatch                 = 0x0100;
+    static const unsigned                    ofRaw                   = 0x1000;
 
 /*
 const int substFlagsDefault                   = smf_Default                        ;
@@ -83,13 +88,18 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
     std::list< std::string >                 macrosOrder;
     std::map<std::string,bool>               expandedMacros;
 
+    std::vector< std::pair<std::string,std::string> >  rawSubstitutions;
+
+
 
     unsigned                                 optionFlags = ofKeepUnknown; // 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
 
     VerbosityLevel                           verbosityLevel = VerbosityLevel::normal;
 
-    std::string                              inputFilename;
-    std::string                              outputFilename;
+    // std::string                              inputFilename;
+    // std::string                              outputFilename;
+
+    std::vector< std::pair< std::string, std::string > >   filesToProcess;
 
     //------------------------------
 
@@ -103,8 +113,8 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
     //------------------------------
     void setVerbosityLevel(VerbosityLevel lvl) { verbosityLevel = lvl; }
 
-    //! Проверяет уровень lvl на предмет допустимости детализации выхлопа в лог для данного уровня.
-    /*! Уровень детализации lvl должен быть меньше или равен заданному в конфиге.
+    //! РџСЂРѕРІРµСЂСЏРµС‚ СѓСЂРѕРІРµРЅСЊ lvl РЅР° РїСЂРµРґРјРµС‚ РґРѕРїСѓСЃС‚РёРјРѕСЃС‚Рё РґРµС‚Р°Р»РёР·Р°С†РёРё РІС‹С…Р»РѕРїР° РІ Р»РѕРі РґР»СЏ РґР°РЅРЅРѕРіРѕ СѓСЂРѕРІРЅСЏ.
+    /*! РЈСЂРѕРІРµРЅСЊ РґРµС‚Р°Р»РёР·Р°С†РёРё lvl РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РјРµРЅСЊС€Рµ РёР»Рё СЂР°РІРµРЅ Р·Р°РґР°РЅРЅРѕРјСѓ РІ РєРѕРЅС„РёРіРµ.
      */
     bool testVerbosity(VerbosityLevel lvl) const
     {
@@ -145,6 +155,8 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
             case ofOverwrite      : return "Overwrite output file";
             case ofStdin          : return "Use STDIN as unput";
             case ofStdout         : return "Use STDOUT as output";
+            case ofBatch          : return "Batch mode";
+            case ofRaw            : return "Raw mode";
 
             default                      : return "Multiple flags taken!!!";
         }
@@ -157,9 +169,11 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(KeepUnknown )
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Conditionals)
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Args        )
-    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Overwrite)
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Overwrite   )
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Stdin       )
     UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Stdout      )
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Batch       )
+    UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT(Raw         )
     // UMBA_PRETTY_HEADERS_APPC_CONFIG_DECLARE_SET_GET_OPT()
 
     void setOptQuet( bool q ) { q ? setVerbosityLevel(VerbosityLevel::quet) : setVerbosityLevel(VerbosityLevel::normal); }
@@ -252,6 +266,8 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
         s << "  " << getOptNameString(ofConditionals)            << ": " << getOptValAsString(optionFlags&ofConditionals) << "\n";
         s << "  " << getOptNameString(ofArgs        )            << ": " << getOptValAsString(optionFlags&ofArgs        ) << "\n";
         s << "  " << getOptNameString(ofOverwrite   )            << ": " << getOptValAsString(optionFlags&ofOverwrite   ) << "\n";
+        s << "  " << getOptNameString(ofBatch       )            << ": " << getOptValAsString(optionFlags&ofBatch       ) << "\n";
+        s << "  " << getOptNameString(ofRaw         )            << ": " << getOptValAsString(optionFlags&ofRaw         ) << "\n";
         //s << "    " << getOptNameString(ofStdin       )            << ": " << getOptValAsString(optionFlags&ofStdin       ) << "\n";
         //s << "    " << getOptNameString(ofStdout      )            << ": " << getOptValAsString(optionFlags&ofStdout      ) << "\n";
         //s << "    " << getOptNameString(of)            << ": " << getOptValAsString(optionFlags&of) << "\n";
@@ -288,10 +304,14 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
 
-        // auto macrosWithLocations     = programLocation.mergeProgramLocationMacros(macros);
-        appConfig.macros             = programLocation.mergeProgramLocationMacros(macros);
+    // std::pair<std::string,std::string>       rawSubstitutions;
+    // unsigned                                 optionFlags = ofKeepUnknown; // 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
 
-        auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(appConfig.macros, true /* envAllowed */ );
+
+        auto macrosWithLocation      = programLocation.mergeProgramLocationMacros(macros);
+        //appConfig.macros             = programLocation.mergeProgramLocationMacros(macros);
+
+        auto getter = umba::macros::MacroTextFromMapOrEnvRef<std::string>(macrosWithLocation, true /* envAllowed */ );
 
         for(auto orderIt = macrosOrder.begin(); orderIt!=macrosOrder.end(); ++orderIt)
         {
@@ -301,14 +321,46 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
             if (mit==macros.end())
                 continue;
 
-            appConfig.macros[*orderIt] = umba::macros::substMacros( mit->second, getter, getMacrosSubstitutionFlags() );
+            appConfig.rawSubstitutions.push_back( std::make_pair(mit->first, mit->second) );
+
+
+            if (isMacroExpanded(*orderIt))
+            {
+                // Already expanded
+                appConfig.macros[*orderIt] = mit->second;
+            }
+            else
+            {
+                appConfig.macros[*orderIt] = umba::macros::substMacros( mit->second, getter, getMacrosSubstitutionFlags() );
+            }
+
             appConfig.expandedMacros[*orderIt] = true;
+
         }
 
-        appConfig.inputFilename      = umba::macros::substMacros( inputFilename , getter, getMacrosSubstitutionFlags() );
-        appConfig.outputFilename     = umba::macros::substMacros( outputFilename, getter, getMacrosSubstitutionFlags() );
+        for( const auto &fp : filesToProcess )
+        {
+            auto in  = umba::macros::substMacros( fp.first  , getter, getMacrosSubstitutionFlags() );
+            auto out = umba::macros::substMacros( fp.second , getter, getMacrosSubstitutionFlags() );
+            appConfig.filesToProcess.push_back( std::make_pair(in,out) );
+        }
+
+        if (appConfig.filesToProcess.empty())
+            appConfig.filesToProcess.push_back( std::make_pair(std::string(),std::string()) );
 
         return appConfig;
+    }
+
+
+    bool isStdoutUsed() const
+    {
+        for( const auto &fp : filesToProcess )
+        {
+            if (fp.second.empty())
+                return true;
+        }
+
+        return false;
     }
 
 }; // struct AppConfig

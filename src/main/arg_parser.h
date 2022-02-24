@@ -279,6 +279,40 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if ( opt.setParam("?MODE",true)
+               || opt.isOption("batch") || opt.isOption('B') 
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Batch mode - process multiple files instead of a single one. Input and output pairs must be taken in form: InputName=OutputName"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            appConfig.setOptBatch(boolVal);
+            return 0;
+        }
+
+        else if ( opt.setParam("?MODE",true)
+               || opt.isOption("raw") || opt.isOption('R') 
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Raw mode - perform simple text substitutions"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(boolVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            appConfig.setOptRaw(boolVal);
+            return 0;
+        }
+
         else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString )
                || opt.isOption("set") || opt.isOption('S')
                // || opt.setParam("VAL",true)
@@ -414,17 +448,44 @@ int operator()( const std::string                               &a           //!
 
     //appConfig.clangCompileFlagsTxtFilename.push_back(makeAbsPath(a));
 
-    if (appConfig.inputFilename.empty())
-        appConfig.inputFilename = makeAbsPath(a);
-
-    else if (appConfig.outputFilename.empty())
-        appConfig.outputFilename = makeAbsPath(a);
-
-    else 
+    if (!appConfig.getOptBatch())
     {
-        LOG_ERR_OPT<<"input/output file names already taken\n";
-        return -1;
+        if (appConfig.filesToProcess.empty())
+        {
+            appConfig.filesToProcess.push_back( std::make_pair(makeAbsPath(a), std::string()) ); // inputFilename
+        }
+
+        else if (appConfig.filesToProcess[0].second.empty())
+        {
+            appConfig.filesToProcess[0].second = makeAbsPath(a); // outputFilename
+        }
+
+        else
+        {
+            LOG_ERR_OPT<<"input/output file names already taken\n";
+            return -1;
+        }
     }
+
+    else // batch mode
+    {
+        std::string inputName, outputName;
+        if (!umba::string_plus::split_to_pair( a, inputName, outputName, '=' ) || outputName.empty())
+        {
+            LOG_ERR_OPT<<"output file name not taken in names pair (use '=' to set names pair) \n";
+            return -1;
+        }
+
+        if (inputName.empty())
+        {
+            LOG_ERR_OPT<<"input file name not taken in names pair (use '=' to set names pair) \n";
+            return -1;
+        }
+
+        appConfig.filesToProcess.push_back( std::make_pair(makeAbsPath(inputName), makeAbsPath(outputName)) ); // inputFilename
+    
+    }
+
 
     return 0;
 
