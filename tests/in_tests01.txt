@@ -1,0 +1,6 @@
+Some
+ thing $(TEST)
+   some 2 thing $(TEST_1)
+     $(TEST_33)
+subst
+  

@@ -314,7 +314,12 @@ int main(int argc, char* argv[])
             ++lineNo;
             // if (appConfig.testVerbosity(VerbosityLevel::detailed))
             //     LOG_MSG_OPT<<"processing input line #" << lineNo << endl;
-            out << umba::macros::substMacros( line, macroGetter, appConfig.getMacrosSubstitutionFlags() ) << std::endl;
+
+            if (!appConfig.getOptRaw())
+                out << umba::macros::substMacros( line, macroGetter, appConfig.getMacrosSubstitutionFlags() ) << std::endl;
+            else
+                out << substTextRaw( line, appConfig.rawSubstitutions ) << std::endl;
+                
         }
 
 

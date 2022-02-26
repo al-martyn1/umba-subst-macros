@@ -81,15 +81,15 @@ int operator()( const std::string                               &a           //!
                                           "1/normal/n|" 
                                           "2/config/c|" 
                                           "3/detailed/detail/d|" 
-                                          "4/extra/high/e" 
+                                          // "4/extra/high/e" 
                              )
               || opt.setInitial(1) || opt.isOption("verbose") || opt.isOption('V')
               || opt.setDescription("Set verbosity level. LEVEL parameter can be one of the next values:\n"
                                     "quet - maximum quet mode (same as --quet).\n"
                                     "normal - print common details.\n"
                                     "config - print common details and app config.\n"
-                                    "detailed - print common details, app config and all declarations, which are found in user files.\n"
-                                    "extra - print common details, app config and all found declarations (from all files)." // "\n"
+                                    "detailed - print common details, app config and all declarations, which are found in user files." // "\n"
+                                    // "extra - print common details, app config and all found declarations (from all files)." // "\n"
                                    )
               )
         {
@@ -373,7 +373,7 @@ int operator()( const std::string                               &a           //!
                 if (pCol && pCol->isNormalPrintHelpStyle() && argsParser.argsNeedHelp.empty())
                 {
                     auto helpText = opt.getHelpOptionsString();
-                    std::cout << "Usage: " << programLocationInfo.exeFullName 
+                    std::cout << "Usage: " << programLocationInfo.exeName
                               << " [OPTIONS] [input_file [output_file]]\n"
                               << "  If output_file not taken, STDOUT used\n"
                               << "  If input_file not taken, STDIN used\n"
