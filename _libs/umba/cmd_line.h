@@ -2043,7 +2043,8 @@ struct CommandLineOptionInfo
 
             if (optInfo.optType==OptionType::optEnum)
             {
-                std::string enumNames = optInfo.getAllEnumNames( ", ", " or ", " / ", "'", "'" );
+                //std::string enumNames = optInfo.getAllEnumNames( ", ", " or ", " / ", "'", "'" );
+                std::string enumNames = optInfo.getAllEnumNames( ", ", " or ", "/", "'", "'" );
                 if (!enumNames.empty())
                    descExtraOss<<"Allowed values: "<<enumNames;
                    //descExtraOss<<"Enumeration: "<<enumNames;
@@ -2104,7 +2105,7 @@ struct CommandLineOptionInfo
             else
             {
                 oss<<"\n";
-                oss<< umba::text_utils::textAddIndent(umba::text_utils::formatTextParas( descr, width ), "    " );
+                oss<< umba::text_utils::textAddIndent(umba::text_utils::formatTextParas( descr, width, umba::text_utils::TextAlignment::left ), "    " );
             }
 
             oss<<"\n";

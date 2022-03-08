@@ -1933,9 +1933,99 @@ static const int caretMax       = 3;
 } // namespace umba
 
 
-#ifdef USE_LOUT
+/*
+    Нужно добавить в проект umba_lout.cpp
 
-    extern umba::SimpleFormatter lout;
+    USE_UMBA_LOUT_UART - Если хотим срать в COM-порт, тот нужно задать тут его имя/номер (uart1)
+                         Нужно не забыть вызвать инициализацию на нужную скорость
+
+    USE_UMBA_LOUT_SWV  - Если хотим срать в отладочный output Keil'а - меню View/Serial Windows/Debug (printf viewer)
+
+    USE_UMBA_LOUT_COUT - если хотим срать в консольный std::cout (Win/Linux)
+    USE_UMBA_LOUT_CERR - если хотим срать в консольный std::cout (Win/Linux)
+*/
+
+#if defined(USE_UMBA_LOUT_UART)
+    #ifdef USE_UMBA_LOUT
+        #error USE_UMBA_LOUT and USE_UMBA_LOUT_UART defined together
+    #endif
+#endif
+
+#if defined(USE_UMBA_LOUT_SWV)
+    #ifdef USE_UMBA_LOUT
+        #error USE_UMBA_LOUT and USE_UMBA_LOUT_SWV defined together
+    #endif
+#endif
+
+#if defined(USE_UMBA_LOUT_COUT)
+    #ifdef USE_UMBA_LOUT
+        #error USE_UMBA_LOUT and USE_UMBA_LOUT_COUT defined together
+    #endif
+#endif
+
+#if defined(USE_UMBA_LOUT_CERR)
+    #ifdef USE_UMBA_LOUT
+        #error USE_UMBA_LOUT and USE_UMBA_LOUT_CERR defined together
+    #endif
+#endif
+
+
+#if defined(UMBA_WIN32_USED)
+    #if defined(USE_UMBA_LOUT_UART)
+        #error USE_UMBA_LOUT_UART not supported under WIN32
+    #endif
+   
+    #if defined(USE_UMBA_LOUT_SWV)
+        #error USE_UMBA_LOUT_SWV not supported under WIN32
+    #endif
+#endif
+
+#if defined(UMBA_MCU_USED)
+    #if defined(USE_UMBA_LOUT_COUT)
+        #error USE_UMBA_LOUT_UART not supported for MCU
+    #endif
+   
+    #if defined(USE_UMBA_LOUT_CERR)
+        #error USE_UMBA_LOUT_CERR not supported for MCU
+    #endif
+#endif
+
+#if defined(USE_UMBA_LOUT_UART) && defined(USE_UMBA_LOUT_SWV)
+    #error USE_UMBA_LOUT_UART and USE_UMBA_LOUT_SWV are mutually exclusive
+#endif
+
+#if defined(USE_UMBA_LOUT_COUT) && defined(USE_UMBA_LOUT_CERR)
+    #error USE_UMBA_LOUT_UART and USE_UMBA_LOUT_SWV are mutually exclusive
+#endif
+
+#if defined(USE_UMBA_LOUT_UART) || defined(USE_UMBA_LOUT_SWV) || defined(USE_UMBA_LOUT_COUT) || defined(USE_UMBA_LOUT_CERR)
+    #define USE_UMBA_LOUT
+    #define UMBA_LOUT_USED
+#endif
+
+
+
+
+// USE_LOUT - for compatibility
+
+#if defined(USE_UMBA_LOUT)
+    #ifndef USE_LOUT
+        #define USE_LOUT
+    #endif
+#endif
+
+#if defined(USE_LOUT)
+    #ifndef USE_UMBA_LOUT
+        #define USE_UMBA_LOUT
+    #endif
+#endif
+
+
+#if defined(USE_UMBA_LOUT)
+
+    namespace umba{ // Завернул в NS, раньше был глобальный
+        extern umba::SimpleFormatter lout;
+    } // namespace umba
 
 #endif
 

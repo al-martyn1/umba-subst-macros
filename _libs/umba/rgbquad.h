@@ -240,7 +240,7 @@ public:
         Если noAlpha==true, то при преобразовании альфаканал отбрасывается.
      */
     void toString( char* nameBuf       //!< Указатель на буфер
-                 , bool noAlpha = true //!< Игнорировать альфа канал
+                 , bool useAlpha = false //!< Игнорировать альфа канал
                  ) const;
 
 
@@ -260,7 +260,7 @@ public:
 
     //! Конвертирует в строку
     template < typename StringType >
-    StringType toString( bool noAlpha = true /*!< Игнорировать альфа канал */ ) const
+    StringType toString( bool useAlpha = false /*!< Игнорировать альфа канал */ ) const
     {
         char buf[ max_name_buf_size ];
         toString( &buf[0] );
@@ -557,10 +557,10 @@ bool RgbQuad::fromString( const char* str )
 
 //-----------------------------------------------------------------------------
 inline
-void RgbQuad::toString( char* nameBuf, bool noAlpha ) const
+void RgbQuad::toString( char* nameBuf, bool useAlpha ) const
 {
     RgbQuad cmp = *this;
-    if (noAlpha)
+    if (!useAlpha)
         cmp.alpha = 0;
 
     const RgbQuad_NameColorPair* pColorPair = RgbQuad_NameColorPair_getColorPairs();

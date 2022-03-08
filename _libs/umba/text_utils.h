@@ -29,6 +29,16 @@ namespace text_utils{
 // std::set<std::string> toUpper( const std::set<std::string> &s );
 // std::set<std::string> toLower( const std::set<std::string> &s );
 
+enum class TextAlignment
+{
+    width  = 0,
+    left      ,
+    center    ,
+    right
+
+};
+
+
 
 //-----------------------------------------------------------------------------
 inline
@@ -39,7 +49,8 @@ std::string textAddIndent(const std::string &text, const std::string &indent)
     // (text.size()/40) - кол-во строк навскидку
     res.reserve( text.size() + (text.size()/40) * indent.size());
 
-    res = indent;
+    if (!text.empty())
+        res = indent;
 
     for( char ch : text)
     {
@@ -49,14 +60,28 @@ std::string textAddIndent(const std::string &text, const std::string &indent)
     }
 
     return res;
-/*
-    std::vector< std::string > lines;
-    splitToVector( text, lines, '\n' );
-    for( auto &ln : lines )
+}
+
+//-----------------------------------------------------------------------------
+inline
+std::string textAddIndent(const std::string &text, const std::string &indent, const std::string &firstIndent)
+{
+    std::string res;
+
+    // (text.size()/40) - кол-во строк навскидку
+    res.reserve( text.size() + (text.size()/40) * indent.size());
+
+    if (!text.empty())
+        res = firstIndent;
+
+    for( char ch : text)
     {
-        ln = indent + ln;
+        res.append(1,ch);
+        if (ch=='\n')
+            res.append(indent);
     }
-*/
+
+    return res;
 }
 
 //-----------------------------------------------------------------------------
@@ -128,9 +153,11 @@ struct StringsGreaterFirstBySize
 };
 
 //-----------------------------------------------------------------------------
+//! Расширяет строку до заданной длины, вставляя дополнительные пробелы
 inline
 std::string expandStringWidth( std::string str, std::string::size_type width )
 {
+
     while(str.size() < width)
     {
         std::string::size_type i = 0;
@@ -149,8 +176,43 @@ std::string expandStringWidth( std::string str, std::string::size_type width )
 }
 
 //-----------------------------------------------------------------------------
+//! Расширяет строку до заданной длины, вставляя дополнительные пробелы
 inline
-std::vector<std::string> prepareTextParaMakeLines( const std::string &para, std::string::size_type paraWidth )
+std::string alignStringWithWidth( std::string str, std::string::size_type width, TextAlignment textAlignment = TextAlignment::width )
+{
+    if (str.empty() || str.size()>=width)
+        return str;
+
+    switch(textAlignment)
+    {
+        //case TextAlignment::left   : return str;
+
+        case TextAlignment::center :
+                                     {
+                                         std::string::size_type widthToAddTotal = str.size() - width;
+                                         std::string::size_type widthToAddLeft  = widthToAddTotal/2;
+                                         std::string::size_type widthToAddRight = widthToAddTotal - widthToAddLeft;
+                                         return std::string(widthToAddLeft, ' ') + str + std::string(widthToAddRight,' ');
+                                     }
+                                     
+        case TextAlignment::right  :
+                                     {
+                                         std::string::size_type widthToAddRight = str.size() - width;
+                                         return str + std::string(widthToAddRight,' ');
+                                     }
+                                     
+        case TextAlignment::width  : return expandStringWidth(str,width);
+
+        default                    : return str;
+    }
+
+}
+
+//-----------------------------------------------------------------------------
+
+//! Форматирует абзац (параграф). На входе - строка текста абзаца, на выходе - разбито на строки, и строки выровнены с учетом textAlignment
+inline
+std::vector<std::string> prepareTextParaMakeLines( const std::string &para, std::string::size_type paraWidth, TextAlignment textAlignment = TextAlignment::width )
 {
     std::vector<std::string> words = umba::string_plus::split(para, ' ', false);
     //splitToVector( para, words, ' ' );
@@ -179,6 +241,24 @@ std::vector<std::string> prepareTextParaMakeLines( const std::string &para, std:
     }
 
     std::vector<std::string> res;
+
+    std::vector< std::vector<std::string> >::size_type lineIdx = 0;
+
+    std::vector< std::vector<std::string> >::const_iterator lineWordsIt = paraLinesWords.begin();
+    std::vector< std::vector<std::string> >::const_iterator lastLineIt  = paraLinesWords.end();
+    --lastLineIt;
+
+    for(; lineWordsIt != paraLinesWords.end(); ++lineWordsIt)
+    {
+        const auto &lw = *lineWordsIt;
+
+        if (lineWordsIt==lastLineIt && textAlignment==TextAlignment::width) 
+            res.push_back(umba::string_plus::merge(lw, ' ')); // если строка последняя и выравнивание по ширине, то не ничего не делаем, просто мержим слова
+        else // Иначе (left/center/right или не последняя строка) - можно выравнивать
+            res.push_back(umba::text_utils::alignStringWithWidth( umba::string_plus::merge(lw, ' '), paraWidth, textAlignment ));
+    }
+
+/*
     std::vector< std::vector<std::string> >::size_type lineIdx = 0;
 
     for( const auto &lw : paraLinesWords )
@@ -189,15 +269,15 @@ std::vector<std::string> prepareTextParaMakeLines( const std::string &para, std:
             res.push_back(umba::string_plus::merge(lw, ' '));
         lineIdx++;
     }
-
+*/
     return res;
 }
 
 //-----------------------------------------------------------------------------
 inline
-std::string prepareTextParaMakeString( const std::string &para, std::string::size_type paraWidth )
+std::string prepareTextParaMakeString( const std::string &para, std::string::size_type paraWidth, TextAlignment textAlignment = TextAlignment::width )
 {
-    std::vector<std::string> v = prepareTextParaMakeLines( para, paraWidth );
+    std::vector<std::string> v = prepareTextParaMakeLines( para, paraWidth, textAlignment );
     auto res = umba::string_plus::merge( v, '\n'); // umba::string_plus::merge
     if (!res.empty() && res.back()!='.' && res.back()!='!' && res.back()!='?' && res.back()!=':' && res.back()!=';')
         res.push_back('.');
@@ -205,8 +285,17 @@ std::string prepareTextParaMakeString( const std::string &para, std::string::siz
 }
 
 //-----------------------------------------------------------------------------
+// enum class TextAlignment
+// {
+//     left   ,
+//     center ,
+//     right  ,
+//     width
+//  
+// };
+
 inline
-std::string formatTextParas( std::string text, std::string::size_type paraWidth )
+std::string formatTextParas( std::string text, std::string::size_type paraWidth, TextAlignment textAlignment = TextAlignment::width )
 {
     std::vector<std::string> paras = umba::string_plus::split(text, '\n', true /* skipEmpty */);
     //splitToVector( text, paras, '\n' );
@@ -227,7 +316,7 @@ std::string formatTextParas( std::string text, std::string::size_type paraWidth 
         {
             if (!text.empty())
                 text.append("\n\n");
-            text.append(prepareTextParaMakeString(p, paraWidth));
+            text.append(prepareTextParaMakeString(p, paraWidth, textAlignment));
         }
     }
 

@@ -105,6 +105,7 @@
 #else
     #if defined(UMBA_CXX_HAS_STD11)
         #include <type_traits>
+        #include <initializer_list>
     #else
         #include "stl_keil.h"
     #endif

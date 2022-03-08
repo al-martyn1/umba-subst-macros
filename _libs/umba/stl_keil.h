@@ -37,4 +37,6 @@ namespace std
 } // namespace std
 
 #include "stl_keil_type_traits.h"
+// #include "stl_keul_initializer_list.h"
+#include "stl_keil_initializer_list.h"
 
