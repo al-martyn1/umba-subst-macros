@@ -1,5 +1,5 @@
-@call :DO_GIT_JOB %1 umba
-@call :DO_GIT_JOB %1 sfmt
+@call :DO_GIT_JOB %1 %~dp0\umba
+@call :DO_GIT_JOB %1 %~dp0\sfmt
 
 @exit /B
 
