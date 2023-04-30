@@ -179,6 +179,11 @@
     <ClCompile Include="..\_libs\umba\critical_section.cpp" />
     <ClCompile Include="..\_libs\umba\time_service.cpp" />
     <ClCompile Include="..\src\main\umba-subst-macros.cpp" />
+    <ClCompile Include="..\_libs\encoding\encoding.cpp" />
+    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det.cc" />
+    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det_hint_code.cc" />
+    <ClCompile Include="..\_libs\encoding\util\encodings\encodings.cc" />
+    <ClCompile Include="..\_libs\encoding\util\languages\languages.cc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
