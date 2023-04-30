@@ -332,6 +332,28 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString )
+               || opt.isOption("xset") || opt.isOption('S')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Set macro NAME with the unescaped text TEXT"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            std::string name, val;
+            umba::string_plus::split_to_pair( strVal, name, val, ':' );
+            //!!! unescape
+            name = marty_cpp::cUnescapeString(name);
+            val  = marty_cpp::cUnescapeString(val );
+            appConfig.setMacro( name, val, false /* deffered */ );
+            return 0;
+        }
+
         else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString)
                || opt.isOption("deffer") || opt.isOption("set-deffered") || opt.isOption('D')
                // || opt.setParam("VAL",true)
@@ -347,6 +369,28 @@ int operator()( const std::string                               &a           //!
             
             std::string name, val;
             umba::string_plus::split_to_pair( strVal, name, val, ':' );
+            appConfig.setMacro( name, val, true /* deffered */ );
+            return 0;
+        }
+
+        else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString)
+               || opt.isOption("xdeffer") || opt.isOption("xset-deffered") || opt.isOption('D')
+               // || opt.setParam("VAL",true)
+               || opt.setDescription("Set macro NAME with the text TEXT (deffered expansion)"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+            
+            std::string name, val;
+            umba::string_plus::split_to_pair( strVal, name, val, ':' );
+            //!!! unescape
+            name = marty_cpp::cUnescapeString(name);
+            val  = marty_cpp::cUnescapeString(val );
             appConfig.setMacro( name, val, true /* deffered */ );
             return 0;
         }
