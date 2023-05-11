@@ -171,20 +171,29 @@ int main(int argc, char* argv[])
 
     programLocationInfo = argsParser.programLocationInfo;
 
-    // Job completed - may be, --where option found
-    if (argsParser.mustExit)
-        return 0;
+    try
+    {
+        // Job completed - may be, --where option found
+        if (argsParser.mustExit)
+            return 0;
+       
+       
+        if (!argsParser.parseStdBuiltins())
+            return 1;
+        if (argsParser.mustExit)
+            return 0;
+       
+        if (!argsParser.parse())
+            return 1;
+        if (argsParser.mustExit)
+            return 0;
 
-
-    if (!argsParser.parseStdBuiltins())
+    }
+    catch(const std::exception &e)
+    {
+        LOG_ERR_OPT<<"Duplicated option key - exiting\n";
         return 1;
-    if (argsParser.mustExit)
-        return 0;
-
-    if (!argsParser.parse())
-        return 1;
-    if (argsParser.mustExit)
-        return 0;
+    }
 
 
     appConfig = appConfig.getAdjustedConfig(programLocationInfo);

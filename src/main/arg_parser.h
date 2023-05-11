@@ -333,7 +333,7 @@ int operator()( const std::string                               &a           //!
         }
 
         else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString )
-               || opt.isOption("xset") || opt.isOption('S')
+               || opt.isOption("xset") || opt.isOption('s')
                // || opt.setParam("VAL",true)
                || opt.setDescription("Set macro NAME with the unescaped text TEXT"))
         {
@@ -374,7 +374,7 @@ int operator()( const std::string                               &a           //!
         }
 
         else if ( opt.setParam("NAME:TEXT", umba::command_line::OptionType::optString)
-               || opt.isOption("xdeffer") || opt.isOption("xset-deffered") || opt.isOption('D')
+               || opt.isOption("xdeffer") || opt.isOption("xset-deffered") || opt.isOption('d')
                // || opt.setParam("VAL",true)
                || opt.setDescription("Set macro NAME with the text TEXT (deffered expansion)"))
         {
