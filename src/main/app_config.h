@@ -84,7 +84,7 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
 */
 
     //------------------------------
-    std::map<std::string, std::string>       macros;
+    umba::macros::StringStringMap<std::string> macros;
     std::list< std::string >                 macrosOrder;
     std::map<std::string,bool>               expandedMacros;
 
