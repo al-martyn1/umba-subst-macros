@@ -48,22 +48,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS);$(ProjectDir)\..\_libs\encoding</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS);$(ProjectDir)\..\_libs\encoding</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS);$(ProjectDir)\..\_libs\encoding</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS);$(ProjectDir)\..\_libs\encoding</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(UMBA_INC_DIRS)</IncludePath>
   </PropertyGroup>
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
@@ -176,15 +176,11 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\_libs\umba\critical_section.cpp" />
-    <ClCompile Include="..\_libs\umba\time_service.cpp" />
     <ClCompile Include="..\src\main\umba-subst-macros.cpp" />
-    <ClCompile Include="..\_libs\encoding\encoding.cpp" />
-    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det.cc" />
-    <ClCompile Include="..\_libs\encoding\compact_enc_det\compact_enc_det_hint_code.cc" />
-    <ClCompile Include="..\_libs\encoding\util\encodings\encodings.cc" />
-    <ClCompile Include="..\_libs\encoding\util\languages\languages.cc" />
   </ItemGroup>
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\umba\.msvc\sources.props" />
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\sfmt\.msvc\sources.props" />
+  <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\encoding\.msvc\sources.props" />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Condition="Exists('$(QtMsBuild)\qt.targets')">
     <Import Project="$(QtMsBuild)\qt.targets" />

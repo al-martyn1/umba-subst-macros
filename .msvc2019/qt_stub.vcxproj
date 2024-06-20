@@ -52,22 +52,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\zulibs\sfmt\inc;$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs;$(ProjectDir)\.\zulibs\sfmt\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\zulibs\sfmt\inc;$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs;$(ProjectDir)\.\zulibs\sfmt\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\zulibs\sfmt\inc;$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs;$(ProjectDir)\.\zulibs\sfmt\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(UMBA_OUTDIR)\</OutDir>
     <IntDir>$(UMBA_OUTDIR)\_$(ProjectName)\</IntDir>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\zulibs\sfmt\inc;$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs;$(ProjectDir)\.\zulibs\sfmt\inc</IncludePath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)\..\..;$(ProjectDir)\./src;$(ProjectDir)\./zulibs</IncludePath>
   </PropertyGroup>
   <Target Name="QtMsBuildNotFound" BeforeTargets="CustomBuild;ClCompile" Condition="!Exists('$(QtMsBuild)\qt.targets') or !Exists('$(QtMsBuild)\qt.props')">
     <Message Importance="High" Text="QtMsBuild: could not locate qt.targets, qt.props; project may not build correctly." />

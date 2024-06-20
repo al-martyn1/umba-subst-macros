@@ -6,9 +6,9 @@
                           
     <UMBA_LOCAL_LIBS_ROOT>$(ProjectDir)\..\_libs</UMBA_LOCAL_LIBS_ROOT>
     <UMBA_LOCAL_PRETTY_HEADERS>$(UMBA_LOCAL_LIBS_ROOT)\pretty_headers;$(UMBA_LOCAL_LIBS_ROOT)\_pretty_headers;$(UMBA_LOCAL_LIBS_ROOT)\std_headers;$(UMBA_LOCAL_LIBS_ROOT)\_std_headers;$(UMBA_LOCAL_LIBS_ROOT)\qt_headers;$(UMBA_LOCAL_LIBS_ROOT)\_qt_headers;$(UMBA_LOCAL_LIBS_ROOT)\qt5_headers;$(UMBA_LOCAL_LIBS_ROOT)\_qt5_headers;$(UMBA_LOCAL_LIBS_ROOT)\qt6_headers;$(UMBA_LOCAL_LIBS_ROOT)\_qt6_headers</UMBA_LOCAL_PRETTY_HEADERS>
-    <UMBA_INC_DIRS>$(UMBA_LOCAL_LIBS_ROOT);$(UMBA_LOCAL_PRETTY_HEADERS);$(ProjectDir)\..\src;$(UMBA_LOCAL_LIBS_ROOT)\sfmt\inc;$(UMBA_LOCAL_LIBS_ROOT)\mem_pools\inc</UMBA_INC_DIRS>
-    <!--  ;$(SolutionDir)\..\..;$(SolutionDir)\zulibs;$(SolutionDir)\src;$(SolutionDir)\zulibs\sfmt\inc -->
-    <!-- ;$(ProjectDir)\..\_libs\sfmt\inc;$(ProjectDir)\..\..;$(ProjectDir)\../src;$(ProjectDir)\../xlibs;$(ProjectDir)\..\_libs\sfmt\inc -->
+    <UMBA_INC_DIRS>$(UMBA_LOCAL_LIBS_ROOT);$(UMBA_LOCAL_PRETTY_HEADERS);$(ProjectDir)\..\src;$(UMBA_LOCAL_LIBS_ROOT)\mem_pools\inc</UMBA_INC_DIRS>
+    <!--  ;$(SolutionDir)\..\..;$(SolutionDir)\zulibs;$(SolutionDir)\src -->
+    <!-- ;$(ProjectDir)\..\..;$(ProjectDir)\../src;$(ProjectDir)\../xlibs -->
 
   </PropertyGroup>
 </Project>

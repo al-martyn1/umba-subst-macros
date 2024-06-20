@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qt_stub", "_prj_msvc2019\qt_stub.vcxproj", "{7CA03583-0724-4FED-9A9E-6651F35E42A9}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "qt_stub", ".msvc2019\qt_stub.vcxproj", "{7CA03583-0724-4FED-9A9E-6651F35E42A9}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "umba-subst-macros", "_prj_msvc2019\umba-subst-macros.vcxproj", "{713FF2D2-8367-4D28-B064-C27B383F34B5}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "umba-subst-macros", ".msvc2019\umba-subst-macros.vcxproj", "{713FF2D2-8367-4D28-B064-C27B383F34B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
