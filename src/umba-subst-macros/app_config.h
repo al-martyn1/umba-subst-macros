@@ -27,7 +27,7 @@ enum class VerbosityLevel
      invalid      = -1,
      begin        = 0,
 
-     quet         = 0,   // quet 
+     quet         = 0,   // quet
      normal       = 1,   // normal - print common details
      config       = 2,   // print common details and app config
      detailed     = 3,   // print common details, app config and all declarations, found in user files
@@ -131,8 +131,8 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
 
     //------------------------------
 
-    
-    
+
+
     //------------------------------
     void ofSet  ( unsigned ofFlags )       { optionFlags |=  ofFlags; }
     void ofReset( unsigned ofFlags )       { optionFlags &= ~ofFlags; }

@@ -1,6 +1,6 @@
 #pragma once
 
-// requires global vars 
+// requires global vars
 // logGccFormat
 // logSourceInfo
 
@@ -28,7 +28,7 @@ umba::SimpleFormatter& startLogError( umba::SimpleFormatter   &s
 {
     // if (logEntryType==LogEntryType::warn  /* && !gopts.allowWarn(warnType) */ )
     //     return logNul;
-    //  
+    //
 
     using namespace umba::omanip;
 
@@ -82,7 +82,7 @@ umba::SimpleFormatter& startLogError( umba::SimpleFormatter   &s
         s<<coloring( UMBA_TERM_COLORS_MAKE_COMPOSITE( umba::term::colors::blue, umba::term::colors::color_default, true  ,  false,  false ) )
          <<"["<<srcFile<<":"<<srcLineNo<<"]";
     }
-    
+
     if (logEntryType==LogEntryType::err || logEntryType==LogEntryType::warn)
         s<<normal<<" ";
 
@@ -110,7 +110,7 @@ umba::SimpleFormatter& startLogError( umba::SimpleFormatter &s, bool bWarning
 // options and other errors
 #define LOG_ERR_OPT             startLogError( logErr, LogEntryType::err ,  /* gopts,  */ std::string("err")    , (const char*)0 , 0     , __FILE__, __LINE__ )
 #define LOG_WARN_OPT(warnType)  startLogError( logErr, LogEntryType::warn,  /* gopts,  */ std::string(warnType) , (const char*)0 , 0     , __FILE__, __LINE__ )
-                                                                            /*         */                                        
+                                                                            /*         */
 #define LOG_MSG_OPT             startLogError( logMsg, LogEntryType::msg ,  /* gopts,  */ std::string("msg")    , (const char*)0 , 0     , (const char*)0, 0 )
 
 

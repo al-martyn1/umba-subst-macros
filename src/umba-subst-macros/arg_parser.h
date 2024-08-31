@@ -77,11 +77,11 @@ int operator()( const std::string                               &a           //!
         }
         #endif
 
-        else if (opt.setParam("LEVEL", 1, "0/quet/no/q|" 
-                                          "1/normal/n|" 
-                                          "2/config/c|" 
-                                          "3/detailed/detail/d|" 
-                                          // "4/extra/high/e" 
+        else if (opt.setParam("LEVEL", 1, "0/quet/no/q|"
+                                          "1/normal/n|"
+                                          "2/config/c|"
+                                          "3/detailed/detail/d|"
+                                          // "4/extra/high/e"
                              )
               || opt.setInitial(1) || opt.isOption("verbose") || opt.isOption('V')
               || opt.setDescription("Set verbosity level. LEVEL parameter can be one of the next values:\n"
@@ -117,15 +117,15 @@ int operator()( const std::string                               &a           //!
                 argsParser.quet = true;
         }
 
-        else if ( opt.isBuiltinsDisableOptionMain  () 
+        else if ( opt.isBuiltinsDisableOptionMain  ()
                || opt.setDescription( dppof + "main distribution options file '" + argsParser.getBuiltinsOptFileName(umba::program_location::BuiltinOptionsLocationFlag::appGlobal   ) + "'"))
         { } // simple skip - обработка уже сделана
 
-        else if ( opt.isBuiltinsDisableOptionCustom() 
+        else if ( opt.isBuiltinsDisableOptionCustom()
                || opt.setDescription( dppof + "custom global options file '"     + argsParser.getBuiltinsOptFileName(umba::program_location::BuiltinOptionsLocationFlag::customGlobal) + "'"))
         { } // simple skip - обработка уже сделана
 
-        else if ( opt.isBuiltinsDisableOptionUser  () 
+        else if ( opt.isBuiltinsDisableOptionUser  ()
                || opt.setDescription( dppof + "user local options file '"        + argsParser.getBuiltinsOptFileName(umba::program_location::BuiltinOptionsLocationFlag::userLocal   ) + "'"))
         { } // simple skip - обработка уже сделана
 
@@ -148,13 +148,13 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
-        else if (opt.setParam("CLR", 0, "no/none/file|" 
-                                        "ansi/term|" 
+        else if (opt.setParam("CLR", 0, "no/none/file|"
+                                        "ansi/term|"
                                         #if defined(WIN32) || defined(_WIN32)
                                         "win32/win/windows/cmd/console"
                                         #endif
                              )
-              || opt.setInitial(-1) || opt.isOption("color") 
+              || opt.setInitial(-1) || opt.isOption("color")
               || opt.setDescription("Force set console output coloring")
               /* ", can be:\nno, none, file - disable coloring\nansi, term - set ansi terminal coloring\nwin32, win, windows, cmd, console - windows console specific coloring method" */
               )
@@ -184,7 +184,7 @@ int operator()( const std::string                               &a           //!
 
         //------------
 
-        else if ( opt.isOption("autocomplete-install") 
+        else if ( opt.isOption("autocomplete-install")
                || opt.setDescription("Install autocompletion to bash"
                                      #if defined(WIN32) || defined(_WIN32)
                                          "/clink(cmd)"
@@ -197,7 +197,7 @@ int operator()( const std::string                               &a           //!
             //return autocomplete(opt, true);
             return umba::command_line::autocompletionInstaller( pCol, opt, pCol->getPrintHelpStyle(), true, [&]( bool bErr ) -> decltype(auto) { return bErr ? LOG_ERR_OPT : LOG_MSG_OPT; } );
         }
-        else if ( opt.isOption("autocomplete-uninstall") 
+        else if ( opt.isOption("autocomplete-uninstall")
                || opt.setDescription("Remove autocompletion from bash"
                                      #if defined(WIN32) || defined(_WIN32)
                                          "/clink(cmd)"
@@ -211,7 +211,7 @@ int operator()( const std::string                               &a           //!
             return umba::command_line::autocompletionInstaller( pCol, opt, pCol->getPrintHelpStyle(), false, [&]( bool bErr ) -> decltype(auto) { return bErr ? LOG_ERR_OPT : LOG_MSG_OPT; } );
         }
 
-        else if ( opt.setParam("?MODE",true) 
+        else if ( opt.setParam("?MODE",true)
                || opt.isOption("keep") || opt.isOption('K')
                // || opt.setParam("VAL",true)
                || opt.setDescription("Keep unknown macros (do not replace them to empty string)"))
@@ -223,7 +223,7 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             appConfig.setOptKeepUnknown(boolVal);
             return 0;
         }
@@ -240,7 +240,7 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             appConfig.setOptConditionals(boolVal);
             return 0;
         }
@@ -257,13 +257,13 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             appConfig.setOptArgs(boolVal);
             return 0;
         }
 
         else if ( opt.setParam("?MODE",true)
-               || opt.isOption("overwrite") || opt.isOption('Y') 
+               || opt.isOption("overwrite") || opt.isOption('Y')
                // || opt.setParam("VAL",true)
                || opt.setDescription("Allow overwrite existing file"))
         {
@@ -274,13 +274,13 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             appConfig.setOptOverwrite(boolVal);
             return 0;
         }
 
         else if ( opt.setParam("?MODE",true)
-               || opt.isOption("batch") || opt.isOption('B') 
+               || opt.isOption("batch") || opt.isOption('B')
                // || opt.setParam("VAL",true)
                || opt.setDescription("Batch mode - process multiple files instead of a single one. Input and output pairs must be taken in form: InputName=OutputName"))
         {
@@ -291,13 +291,13 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             appConfig.setOptBatch(boolVal);
             return 0;
         }
 
         else if ( opt.setParam("?MODE",true)
-               || opt.isOption("raw") || opt.isOption('R') 
+               || opt.isOption("raw") || opt.isOption('R')
                // || opt.setParam("VAL",true)
                || opt.setDescription("Raw mode - perform simple text substitutions"))
         {
@@ -308,7 +308,7 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             appConfig.setOptRaw(boolVal);
             return 0;
         }
@@ -325,7 +325,7 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             std::string name, val;
             umba::string_plus::split_to_pair( strVal, name, val, ':' );
             appConfig.setMacro( name, val, false /* deffered */ );
@@ -344,7 +344,7 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             std::string name, val;
             umba::string_plus::split_to_pair( strVal, name, val, ':' );
             //!!! unescape
@@ -366,7 +366,7 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             std::string name, val;
             umba::string_plus::split_to_pair( strVal, name, val, ':' );
             appConfig.setMacro( name, val, true /* deffered */ );
@@ -385,7 +385,7 @@ int operator()( const std::string                               &a           //!
                 LOG_ERR_OPT<<errMsg<<"\n";
                 return -1;
             }
-            
+
             std::string name, val;
             umba::string_plus::split_to_pair( strVal, name, val, ':' );
             //!!! unescape
@@ -423,7 +423,7 @@ int operator()( const std::string                               &a           //!
                               << "  If input_file not taken, STDIN used\n"
                               << "\nOptions:\n\n"<<helpText;
                 }
-                
+
                 if (pCol) // argsNeedHelp
                     std::cout<<pCol->makeText( 78, &argsParser.argsNeedHelp );
 
@@ -487,7 +487,7 @@ int operator()( const std::string                               &a           //!
         */
 
         return 0;
-    
+
     }
 
     //appConfig.clangCompileFlagsTxtFilename.push_back(makeAbsPath(a));
@@ -527,7 +527,7 @@ int operator()( const std::string                               &a           //!
         }
 
         appConfig.filesToProcess.push_back( std::make_pair(makeAbsPath(inputName), makeAbsPath(outputName)) ); // inputFilename
-    
+
     }
 
 

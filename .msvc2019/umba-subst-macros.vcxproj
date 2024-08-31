@@ -176,7 +176,7 @@
     </QtMoc>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\main\umba-subst-macros.cpp" />
+    <ClCompile Include="..\src\umba-subst-macros\umba-subst-macros.cpp" />
   </ItemGroup>
   <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\umba\.msvc\sources.props" />
   <Import Project="$(UMBA_LOCAL_LIBS_ROOT)\sfmt\.msvc\sources.props" />

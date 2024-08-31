@@ -34,6 +34,6 @@ int main(int argc, char* argv[])
     cout<<"Launched from : "<<QDir::currentPath().toStdString()<<endl;
     cout<<"Launched exe  : "<<QCoreApplication::applicationFilePath().toStdString()<<endl;
     cout<<"Path to exe   : "<<QCoreApplication::applicationDirPath().toStdString()<<endl;
-   
+
     return 0;
 }

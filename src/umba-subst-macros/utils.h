@@ -77,7 +77,7 @@ std::string substTextRaw( std::string text, const std::vector< std::pair<std::st
 
         };
 
-    
+
     auto updateStartPositions = [&]( std::string::size_type pos )
         {
             // Похуй, откуда начинать, пусть цикл будет одинаковый
@@ -92,7 +92,7 @@ std::string substTextRaw( std::string text, const std::vector< std::pair<std::st
         };
 
 
-    std::vector< std::string::size_type >::size_type 
+    std::vector< std::string::size_type >::size_type
     foundStringIdx = findNextPosition();
 
     while(foundStringIdx<rawSubstitutions.size())
