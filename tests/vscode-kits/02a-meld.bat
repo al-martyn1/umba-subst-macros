@@ -1,0 +1,1 @@
+start meld %~dp0\cmake-tools-kits.auto-scanned.json %~dp0\cmake-tools-kits.result.json

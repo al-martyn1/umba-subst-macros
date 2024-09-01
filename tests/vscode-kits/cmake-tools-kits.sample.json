@@ -1,0 +1,81 @@
+[
+  {
+    "name": "Clang 17.0.1 x86_64-pc-windows-msvc",
+    "compilers": {
+      "C": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+      "CXX": "C:\\Program Files\\LLVM\\bin\\clang++.exe"
+    },
+    "isTrusted": true
+  },
+  {
+    "name": "Clang-cl 17.0.1 x86_64-pc-windows-msvc",
+    "compilers": {
+      "C": "C:\\Program Files\\LLVM\\bin\\clang-cl.exe",
+      "CXX": "C:\\Program Files\\LLVM\\bin\\clang-cl.exe"
+    },
+    "isTrusted": true
+  },
+  {
+    "name": "GCC 13.2.0 x86_64-w64-mingw32",
+    "compilers": {
+      "C": "C:\\w64devkit\\bin\\gcc.exe",
+      "CXX": "C:\\w64devkit\\bin\\g++.exe"
+    },
+    "isTrusted": true
+  },
+  {
+    "name": "GCC 13.2.1 arm-none-eabi",
+    "compilers": {
+      "C": "C:\\Program Files (x86)\\Arm GNU Toolchain arm-none-eabi\\13.2 Rel1\\bin\\arm-none-eabi-gcc.exe",
+      "CXX": "C:\\Program Files (x86)\\Arm GNU Toolchain arm-none-eabi\\13.2 Rel1\\bin\\arm-none-eabi-g++.exe"
+    },
+    "toolchainFile": "C:\\work\\github_3dp\\stm32-cmake\\cmake\\stm32_gcc.cmake",
+    "cmakeSettings": {
+      "loggingLevel": "trace",
+      "OPENOCD_ROOT": "C:\\OpenOCD"
+    },
+    "isTrusted": true
+  },
+  {
+    "name": "GCC 6.3.0 mingw32",
+    "compilers": {
+      "C": "C:\\MinGW\\bin\\gcc.exe",
+      "CXX": "C:\\MinGW\\bin\\g++.exe"
+    },
+    "isTrusted": true,
+    "environmentVariables": {
+      "CMT_MINGW_PATH": "C:\\MinGW\\bin"
+    },
+    "preferredGenerator": {
+      "name": "MinGW Makefiles"
+    }
+  },
+  {
+    "name": "GCC 7.3.0 i686-w64-mingw32",
+    "compilers": {
+      "C": "C:\\Qt\\Qt5.12.12\\Tools\\mingw730_32\\bin\\gcc.exe",
+      "CXX": "C:\\Qt\\Qt5.12.12\\Tools\\mingw730_32\\bin\\g++.exe"
+    },
+    "isTrusted": true,
+    "environmentVariables": {
+      "CMT_MINGW_PATH": "C:\\Qt\\Qt5.12.12\\Tools\\mingw730_32\\bin"
+    },
+    "preferredGenerator": {
+      "name": "MinGW Makefiles"
+    }
+  },
+  {
+    "name": "GCC 7.3.0 x86_64-w64-mingw32",
+    "compilers": {
+      "C": "C:\\Qt\\Qt5.12.12\\Tools\\mingw730_64\\bin\\gcc.exe",
+      "CXX": "C:\\Qt\\Qt5.12.12\\Tools\\mingw730_64\\bin\\g++.exe"
+    },
+    "isTrusted": true,
+    "environmentVariables": {
+      "CMT_MINGW_PATH": "C:\\Qt\\Qt5.12.12\\Tools\\mingw730_64\\bin"
+    },
+    "preferredGenerator": {
+      "name": "MinGW Makefiles"
+    }
+  }
+]
