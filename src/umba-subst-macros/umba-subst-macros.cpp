@@ -5,8 +5,10 @@
 #include "umba/umba.h"
 #include "umba/simple_formatter.h"
 #include "umba/char_writers.h"
-
+//
 #include "umba/debug_helpers.h"
+//
+#include "encoding/encoding.h"
 
 #include <iostream>
 #include <iomanip>
@@ -210,10 +212,10 @@ int main(int argc, char* argv[])
             argsParser.args.push_back("--overwrite");
 
             // argsParser.args.push_back("--batch-exclude-dir=_libs,libs,_lib,lib,tests,test,rc,_generators,_distr_conf,src,.msvc2019,boost,icons");
-            argsParser.args.push_back("@" + rootPath + "/tests/code-kits/kits-name-replace.rsp");
+            argsParser.args.push_back("@" + rootPath + "tests/vscode-kits/kits-name-replace.rsp");
 
-            argsParser.args.push_back("" + rootPath + "/tests/code-kits/cmake-tools-kits.auto-scanned.json");
-            argsParser.args.push_back("" + rootPath + "/tests/code-kits/cmake-tools-kits.result.json");
+            argsParser.args.push_back("" + rootPath + "tests/vscode-kits/cmake-tools-kits.auto-scanned.json");
+            argsParser.args.push_back("" + rootPath + "tests/vscode-kits/cmake-tools-kits.result.json");
 
             // argsParser.args.push_back("--overwrite");
             // //argsParser.args.push_back("--doxyfication=always");
@@ -299,6 +301,7 @@ int main(int argc, char* argv[])
         // auto in  = umba::macros::substMacros( fp.first  , getter, getMacrosSubstitutionFlags() );
         // auto out = umba::macros::substMacros( fp.second , getter, getMacrosSubstitutionFlags() );
 
+        #if 0
         std::istream *pIn = &std::cin;
 
         std::ifstream inFile;
@@ -415,37 +418,74 @@ int main(int argc, char* argv[])
         marty_cpp::ELinefeedType detectedLinefeedType = marty_cpp::ELinefeedType::crlf;
         std::string lfNormalizedText = marty_cpp::normalizeCrLfToLf(text, &detectedLinefeedType);
 
-        std::string processedText;
+        #endif
 
-        if (!appConfig.getOptRaw())
-            processedText = umba::macros::substMacros( lfNormalizedText, macroGetter, appConfig.getMacrosSubstitutionFlags() );
+        std::string inputText;
+        encoding::EncodingsApi::codepage_type inputCp = 0;
+
+        // Предполагается, что fileName в формате UTF8
+
+        // std::ifstream inFile;
+        if (!fp.first.empty())
+        {
+#if defined(WIN32) || defined(_WIN32)
+            if (!umba::filesys::readFile(encoding::fromUtf8(fp.first), inputText))
+#else
+            if (!filesys::readFile(fp.first, inputText))
+#endif
+            {
+                LOG_WARN_OPT("input-not-exist")<<"failed to open input file '"<<fp.first<<"'\n";
+                continue; // return 1;
+            }
+        }
         else
-            processedText = substTextRaw( lfNormalizedText, appConfig.rawSubstitutions );
-
-        // делаем правильный перевод строки. Лень делать по-другому
-        std::vector<std::string> processedLines = marty_cpp::splitToLinesSimple(processedText, true /* addEmptyLineAfterLastLf */);
-        std::string finalText = marty_cpp::mergeLines(processedLines, detectedLinefeedType, false /* addTrailingNewLine */);
-        std::string bomFinalText = bom + finalText;
-        umba::filesys::writeFile(out, bomFinalText.data(), bomFinalText.size());
-
-
-        // std::size_t lineNo = 0;
-        // std::string line;
-        // while( std::getline( in, line ) )
-        // {
-        //     ++lineNo;
-        //     // if (appConfig.testVerbosity(VerbosityLevel::detailed))
-        //     //     LOG_MSG_OPT<<"processing input line #" << lineNo << endl;
-        //
-        //     if (!appConfig.getOptRaw())
-        //         out << umba::macros::substMacros( line, macroGetter, appConfig.getMacrosSubstitutionFlags() ) << std::endl;
-        //     else
-        //         out << substTextRaw( line, appConfig.rawSubstitutions ) << std::endl;
-        //
-        // }
+        {
+            if (!umba::filesys::readFile(std::cin, inputText))
+            {
+                LOG_WARN_OPT("input-not-exist")<<"failed to read data from stdin\n";
+                continue; // return 1;
+            }
+        }
 
 
-    }
+        inputText = encoding::toUnicodeAuto(inputText, &inputCp);
+
+        std::string processedText;
+        if (!appConfig.getOptRaw())
+            processedText = umba::macros::substMacros(inputText, macroGetter, appConfig.getMacrosSubstitutionFlags());
+        else
+            processedText = substTextRaw(inputText, appConfig.rawSubstitutions);
+
+        // // делаем правильный перевод строки. Лень делать по-другому
+        // std::vector<std::string> processedLines = marty_cpp::splitToLinesSimple(processedText, true /* addEmptyLineAfterLastLf */);
+        // std::string finalText = marty_cpp::mergeLines(processedLines, detectedLinefeedType, false /* addTrailingNewLine */);
+        // std::string bomFinalText = bom + finalText;
+        // umba::filesys::writeFile(out, bomFinalText.data(), bomFinalText.size());
+
+        std::string finalText = encoding::fromUnicodeToCodepage(processedText, inputCp);
+        // !!! need to add BOM?
+
+        if (fp.second.empty())
+        {
+            std::cout << finalText;
+        }
+        else
+        {
+            bool overwrite = appConfig.getOptOverwrite() ? true : false;
+
+#if defined(WIN32) || defined(_WIN32)
+            if (!umba::filesys::writeFile(encoding::fromUtf8(fp.second), finalText, overwrite))
+#else
+            if (!filesys::writeFile(fp.second, finalText, overwrite))
+#endif
+            {
+                LOG_WARN_OPT("input-not-exist")<<"failed to write output file '"<<fp.second<<"'\n";
+                continue; // return 1;
+            }
+
+        }
+
+    } // for( const auto &fp : appConfig.filesToProcess )
 
 
     return 0;
