@@ -16,7 +16,6 @@
 #include <cstdio>
 #include <cerrno>
 #include <cstring>
-#include <filesystem>
 
 #if (defined(WIN32) || defined(_WIN32)) && defined(_MSC_VER)
     #include <stdio.h>
