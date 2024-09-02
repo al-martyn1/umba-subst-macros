@@ -16,22 +16,22 @@ AppConfig    appConfig;
 struct ArgParser
 {
 
-std::stack<std::string> optFiles;
-
-
-std::string makeAbsPath( std::string p )
-{
-    std::string basePath;
-
-    if (optFiles.empty())
-        basePath = umba::filesys::getCurrentDirectory<std::string>();
-    else
-        basePath = umba::filename::getPath(optFiles.top());
-
-
-    return umba::filename::makeAbsPath( p, basePath );
-
-}
+// std::stack<std::string> optFiles;
+//  
+//  
+// std::string makeAbsPath( std::string p )
+// {
+//     std::string basePath;
+//  
+//     if (optFiles.empty())
+//         basePath = umba::filesys::getCurrentDirectory<std::string>();
+//     else
+//         basePath = umba::filename::getPath(optFiles.top());
+//  
+//  
+//     return umba::filename::makeAbsPath( p, basePath );
+//  
+// }
 
 
 
@@ -444,13 +444,11 @@ int operator()( const std::string                               &a           //!
     } // if (opt.isOption())
     else if (opt.isResponseFile())
     {
-        std::string optFileName = makeAbsPath(opt.name);
+        std::string optFileName = argsParser.makeAbsPath(opt.name);
 
-        optFiles.push(optFileName);
-
+        argsParser.pushOptionsFileName(optFileName);
         auto parseRes = argsParser.parseOptionsFile( optFileName );
-
-        optFiles.pop();
+        argsParser.popOptionsFileName();
 
         if (!parseRes)
             return -1;
@@ -496,12 +494,12 @@ int operator()( const std::string                               &a           //!
     {
         if (appConfig.filesToProcess.empty())
         {
-            appConfig.filesToProcess.push_back( std::make_pair(makeAbsPath(a), std::string()) ); // inputFilename
+            appConfig.filesToProcess.push_back( std::make_pair(argsParser.makeAbsPath(a), std::string()) ); // inputFilename
         }
 
         else if (appConfig.filesToProcess[0].second.empty())
         {
-            appConfig.filesToProcess[0].second = makeAbsPath(a); // outputFilename
+            appConfig.filesToProcess[0].second = argsParser.makeAbsPath(a); // outputFilename
         }
 
         else
@@ -526,7 +524,7 @@ int operator()( const std::string                               &a           //!
             return -1;
         }
 
-        appConfig.filesToProcess.push_back( std::make_pair(makeAbsPath(inputName), makeAbsPath(outputName)) ); // inputFilename
+        appConfig.filesToProcess.push_back( std::make_pair(argsParser.makeAbsPath(inputName), argsParser.makeAbsPath(outputName)) ); // inputFilename
 
     }
 
