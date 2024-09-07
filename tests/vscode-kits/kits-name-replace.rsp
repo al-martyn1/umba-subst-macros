@@ -10,7 +10,7 @@
 
 
 -S=GCC 13.2.0 x86_64-w64-mingw32:GCC 13.2 MinGW
--S=GCC 13.2.1 arm-none-eabi:GCC 13.2 ARM None EABI
+-S=GCC 13.2.1 arm-none-eabi:GCC 13.2 STM32
 -S=GCC 4.7.0 mingw32:GCC 4.7 MinGW
 -S=GCC 7.3.0 i686-w64-mingw32:GCC 7.3 x86 MinGW
 -S=GCC 7.3.0 x86_64-w64-mingw32:GCC 7.3 x64 MinGW
