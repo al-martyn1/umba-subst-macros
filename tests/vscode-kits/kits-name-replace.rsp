@@ -1,12 +1,26 @@
--S=Clang 12.0.0 (GNU CLI) - amd64 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release:Clang 12/GNU x64 VS 2019 16.11.34931.43
--S=Clang 12.0.0 (GNU CLI) - x86 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release:Clang 12/GNU x86 VS 2019 16.11.34931.43
--S=Clang 12.0.0 (GNU CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - amd64:Clang 12/GNU x64 VS 2019 16.11.33529.622
--S=Clang 12.0.0 (GNU CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - x86:Clang 12/GNU x86 VS 2019 16.11.33529.622
+-S=Clang 12.0.0 (GNU CLI) - amd64 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release):Clang 12.0/GNU x64 VS 2019 16.11.34931.43
+-S=Clang 12.0.0 (GNU CLI) - amd64 for MSVC 16.11.35826.135 (Visual Studio Community 2019 Release):Clang 12.0/GNU x64 VS 2019 16.11.35826.135
 
--S=Clang 12.0.0 (MSVC CLI) - amd64 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release:Clang 12/MSVC x64 VS 2019 16.11.34931.43
--S=Clang 12.0.0 (MSVC CLI) - x86 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release:Clang 12/MSVC x86 VS 2019 16.11.34931.43
--S=Clang 12.0.0 (MSVC CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - amd64:Clang 12/MSVC x64 VS 2019 16.11.33529.622
--S=Clang 12.0.0 (MSVC CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - x86:Clang 12/MSVC x86 VS 2019 16.11.33529.622
+-S=Clang 12.0.0 (GNU CLI) - x86 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release):Clang 12.0/GNU x86 VS 2019 16.11.34931.43
+-S=Clang 12.0.0 (GNU CLI) - x86 for MSVC 16.11.35826.135 (Visual Studio Community 2019 Release):Clang 12.0/GNU x86 VS 2019 16.11.35826.135
+
+-S=Clang 12.0.0 (GNU CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - amd64):Clang 12.0/GNU x64 VS 2019 16.11.33529.622
+-S=Clang 12.0.0 (GNU CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - x86):Clang 12.0/GNU x86 VS 2019 16.11.33529.622
+
+
+-S=Clang 12.0.0 (MSVC CLI) - amd64 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release):Clang 12.0/MSVC x64 VS 2019 16.11.34931.43
+-S=Clang 12.0.0 (MSVC CLI) - amd64 for MSVC 16.11.35826.135 (Visual Studio Community 2019 Release):Clang 12.0/MSVC x64 VS 2019 16.11.35826.135
+
+-S=Clang 12.0.0 (MSVC CLI) - x86 for MSVC 16.11.34931.43 (Visual Studio Community 2019 Release):Clang 12.0/MSVC x86 VS 2019 16.11.34931.43
+-S=Clang 12.0.0 (MSVC CLI) - x86 for MSVC 16.11.35826.135 (Visual Studio Community 2019 Release):Clang 12.0/MSVC x86 VS 2019 16.11.35826.135
+
+-S=Clang 12.0.0 (MSVC CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - amd64):Clang 12.0/MSVC x64 VS 2019 16.11.33529.622
+-S=Clang 12.0.0 (MSVC CLI) for MSVC 16.11.33529.622 (Visual Studio Community 2019 Release - x86):Clang 12.0/MSVC x86 VS 2019 16.11.33529.622
+
+-S=Clang 19.1.1 (GNU CLI) - amd64 for MSVC 17.13.35919.96 (Visual Studio Community 2022 Release):Clang 19.1/GNU x64 VS 2022 17.13.35919.96
+-S=Clang 19.1.1 (GNU CLI) - x86 for MSVC 17.13.35919.96 (Visual Studio Community 2022 Release):Clang 19.1/GNU x86 VS 2022 17.13.35919.96
+-S=Clang 19.1.1 (MSVC CLI) - amd64 for MSVC 17.13.35919.96 (Visual Studio Community 2022 Release):Clang 19.1/MSVC x64 VS 2022 17.13.35919.96
+-S=Clang 19.1.1 (MSVC CLI) - x86 for MSVC 17.13.35919.96 (Visual Studio Community 2022 Release):Clang 19.1/MSVC x86 VS 2022 17.13.35919.96
 
 
 -S=GCC 13.2.0 x86_64-w64-mingw32:GCC 13.2 MinGW
