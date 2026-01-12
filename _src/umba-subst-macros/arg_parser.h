@@ -41,7 +41,7 @@ int operator()( const std::string                               &a           //!
               , umba::command_line::CommandLineOption           &opt         //!< Объект-опция, содержит разобранный аргумент и умеет отвечать на некоторые вопросы
               , ArgsParser                                      &argsParser  //!< Класс, который нас вызывает, содержит некоторый контекст
               , umba::command_line::ICommandLineOptionCollector *pCol        //!< Коллектор опций - собирает инфу по всем опциям и готов вывести справку
-              , bool fBuiltin
+              , bool // fBuiltin
               , bool ignoreInfos
               )
 {
@@ -317,8 +317,11 @@ int operator()( const std::string                               &a           //!
                || opt.isOption("set") || opt.isOption('S') || opt.setDescription("Set macro NAME with the text TEXT"))
         {
             if (argsParser.hasHelpOption) return 0;
-            if (!opt.getParamValue(strVal,errMsg)) { LOG_ERR_OPT<<errMsg<<"\n"; return -1; }
-            appConfig.setMacro(strVal, false /* !deffered */, false /* !unescape */, ':');
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n"; return -1;
+            }
+            appConfig.setMacro(strVal, false /* !deffered */, false /* !unescape */, opt.sepChar == '=' ? ':' : '=');
             return 0;
         }
 
@@ -326,7 +329,10 @@ int operator()( const std::string                               &a           //!
                || opt.isOption("xset") || opt.isOption('s') || opt.setDescription("Set macro NAME with the unescaped text TEXT"))
         {
             if (argsParser.hasHelpOption) return 0;
-            if (!opt.getParamValue(strVal,errMsg)) { LOG_ERR_OPT<<errMsg<<"\n"; return -1; }
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n"; return -1;
+            }
             appConfig.setMacro(strVal, false /* !deffered */, true /* unescape */, opt.sepChar=='=' ? ':' : '=');
             return 0;
         }
@@ -335,7 +341,10 @@ int operator()( const std::string                               &a           //!
                || opt.isOption("deffer") || opt.isOption("set-deffered") || opt.isOption('D') || opt.setDescription("Set macro NAME with the text TEXT (deffered expansion)"))
         {
             if (argsParser.hasHelpOption) return 0;
-            if (!opt.getParamValue(strVal,errMsg)) { LOG_ERR_OPT<<errMsg<<"\n"; return -1; }
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n"; return -1;
+            }
             appConfig.setMacro(strVal, true /* deffered */, false /* !unescape */, opt.sepChar=='=' ? ':' : '=');
             return 0;
         }
@@ -344,7 +353,10 @@ int operator()( const std::string                               &a           //!
                || opt.isOption("xdeffer") || opt.isOption("xset-deffered") || opt.isOption('d') || opt.setDescription("Set macro NAME with the unescaped text TEXT (deffered expansion)"))
         {
             if (argsParser.hasHelpOption) return 0;
-            if (!opt.getParamValue(strVal,errMsg)) { LOG_ERR_OPT<<errMsg<<"\n"; return -1; }
+            if (!opt.getParamValue(strVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n"; return -1;
+            }
             appConfig.setMacro(strVal, true /* deffered */, true /* unescape */, opt.sepChar=='=' ? ':' : '=');
             return 0;
         }

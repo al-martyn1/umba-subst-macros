@@ -95,7 +95,7 @@ set(COMMON_LIBS encoding::encoding marty::cpp sfmt::sfmt umba::umba)
 
 
 add_executable(${PROJECT_NAME} "${SRC_ROOT}/umba-subst-macros/umba-subst-macros.cpp" "${headers}")
-umba_add_target_options(${PROJECT_NAME} "CONSOLE" "BIGOBJ" "UTF8" ) # "PEDANTIC" "WERR"
+umba_add_target_options(${PROJECT_NAME} "CONSOLE" "BIGOBJ" "UTF8" "PEDANTIC" "WERR") # "PEDANTIC" "WERR"
 target_link_libraries(${PROJECT_NAME} PRIVATE "${PLATFORM_LIBS}" "${COMMON_LIBS}")
 
 

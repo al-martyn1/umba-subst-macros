@@ -264,7 +264,7 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
             val  = marty_cpp::cUnescapeString(val );
         }
 
-        setMacro( name, val, false /* deffered */ );
+        setMacro( name, val, deffered );
     }
 
 

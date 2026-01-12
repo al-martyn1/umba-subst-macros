@@ -34,3 +34,4 @@
 /_prj_msvc2019/*.user
 /.distr
 *.user
+/.set_msvc.bat
