@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 
 set(UMBA_STATIC_RUNTIME ON)
-set(UMBA_USE_BOOST      ON)
+set(UMBA_USE_BOOST      OFF)
 
 include(${CMAKE_CURRENT_LIST_DIR}/.cmake/umba.cmake)
 
@@ -85,7 +85,7 @@ if(WIN32) # Всё нормально, это про таргет
     list(APPEND PLATFORM_LIBS ws2_32 iphlpapi shell32)
 endif()
 
-set(COMMON_LIBS encoding::encoding marty_cpp::marty_cpp sfmt::sfmt umba::umba)
+set(COMMON_LIBS encoding::encoding marty::cpp sfmt::sfmt umba::umba)
 #set(PUGIXML_LIB pugixml::pugixml marty_pugixml::marty_pugixml)
 # set(JSON_YAML_LIB nlohmann_json::nlohmann_json yaml-cpp::yaml-cpp)
 

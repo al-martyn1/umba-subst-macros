@@ -127,7 +127,27 @@ void myInvalidParameterHandler(const wchar_t* expression,
 #endif
 
 
+//----------------------------------------------------------------------------
+inline
+void umbaDelay(unsigned ticks)
+{
+    // umba::time_service::TimeTick startTick = umba::time_service::getCurTimeMs();
+    // umba::time_service::TimeTick curTick   = umba::time_service::getCurTimeMs();
+    //  
+    // while()
 
+    umba::time_service::delayMs((umba::time_service::TimeTick)ticks);
+}
+
+//----------------------------------------------------------------------------
+// inline
+// bool cheForReadWrite(const std::string &fileName)
+// {
+//     ate
+// }
+
+
+//----------------------------------------------------------------------------
 int main(int argc, char* argv[])
 {
     // abort();
@@ -172,7 +192,7 @@ int main(int argc, char* argv[])
 
     if (umba::isDebuggerPresent())
     {
-        std::string cwd = umba::filesys::getCurrentDirectory<std::string>();
+        std::string cwd = umba::filesys::getCurrentDirectory(); // <std::string>();
         std::cout << "Working Dir: " << cwd << "\n";
         std::string rootPath;
 
@@ -427,15 +447,39 @@ int main(int argc, char* argv[])
         // std::ifstream inFile;
         if (!fp.first.empty())
         {
-#if defined(WIN32) || defined(_WIN32)
-            if (!umba::filesys::readFile(encoding::fromUtf8(fp.first), inputText))
-#else
-            if (!filesys::readFile(fp.first, inputText))
-#endif
+            bool bReaded = false;
+            for(unsigned tryN=appConfig.ioTryCount; tryN-->0; )
             {
-                LOG_WARN_OPT("input-not-exist")<<"failed to open input file '"<<fp.first<<"'\n";
+                #if defined(WIN32) || defined(_WIN32)
+                if (!umba::filesys::readFile(encoding::fromUtf8(fp.first), inputText))
+                #else
+                if (!umba::filesys::readFile(fp.first, inputText))
+                #endif
+                {
+                    if (tryN==0) // Последняя попытка
+                    {
+                        LOG_WARN_OPT("input-not-exist")<<"failed to open input file '"<<fp.first<<"'\n";
+                        //continue; // return 1;
+                        //break;
+                    }
+                    else
+                    {
+                        LOG_WARN_OPT("wait-for-input-file")<<"waiting for '"<<fp.first<<"' input file is ready for reading" << "\n";
+                        umbaDelay(appConfig.ioDelay);
+                    }
+                }
+                else
+                {
+                    bReaded = true;
+                    break;
+                }
+            }
+
+            if (!bReaded)
+            {
                 continue; // return 1;
             }
+
         }
         else
         {
@@ -472,14 +516,30 @@ int main(int argc, char* argv[])
         {
             bool overwrite = appConfig.getOptOverwrite() ? true : false;
 
-#if defined(WIN32) || defined(_WIN32)
-            if (!umba::filesys::writeFile(encoding::fromUtf8(fp.second), finalText, overwrite))
-#else
-            if (!filesys::writeFile(fp.second, finalText, overwrite))
-#endif
+            for(unsigned tryN=appConfig.ioTryCount; tryN-->0; )
             {
-                LOG_WARN_OPT("input-not-exist")<<"failed to write output file '"<<fp.second<<"'\n";
-                continue; // return 1;
+                #if defined(WIN32) || defined(_WIN32)
+                if (!umba::filesys::writeFile(encoding::fromUtf8(fp.second), finalText, overwrite))
+                #else
+                if (!umba::filesys::writeFile(fp.second, finalText, overwrite))
+                #endif
+                {
+                    if (tryN==0) // Последняя попытка
+                    {
+                        LOG_WARN_OPT("write-output-failed")<<"failed to write output file '"<<fp.second<<"'\n";
+                        //continue; // return 1;
+                    }
+                    else
+                    {
+                        LOG_WARN_OPT("wait-for-output-file")<<"waiting for '"<<fp.first<<"' output file is reeady for writting" << "\n";
+                        umbaDelay(appConfig.ioDelay);
+                    }
+
+                }
+                else
+                {
+                    break;
+                }
             }
 
         }

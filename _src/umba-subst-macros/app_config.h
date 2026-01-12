@@ -90,7 +90,7 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
 
     std::vector< std::pair<std::string,std::string> >  rawSubstitutions;
 
-    unsigned                                           ioTryCount = 0;
+    unsigned                                           ioTryCount = 10;
     unsigned                                           ioDelay    = 100;
 
 
@@ -308,10 +308,17 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
         appConfig.ioTryCount         = ioTryCount;
         appConfig.ioDelay            = ioDelay   ;
 
+        if (appConfig.ioTryCount<1)
+            appConfig.ioTryCount = 1;
+
+        if (appConfig.ioDelay<1)
+        {
+            appConfig.ioDelay = 0;
+            appConfig.ioTryCount = 1;
+        }
 
     // std::pair<std::string,std::string>       rawSubstitutions;
     // unsigned                                 optionFlags = ofKeepUnknown; // 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
-
 
         auto macrosWithLocation      = programLocation.mergeProgramLocationMacros(macros);
         //appConfig.macros             = programLocation.mergeProgramLocationMacros(macros);
