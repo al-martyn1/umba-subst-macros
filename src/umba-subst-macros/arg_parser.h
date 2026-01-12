@@ -395,6 +395,50 @@ int operator()( const std::string                               &a           //!
             return 0;
         }
 
+        else if ( opt.setParam("N", umba::command_line::OptionType::optInt)
+               || opt.isOption("io-try-count") // || opt.isOption('T')
+               || opt.setDescription("Set number of I/O attempts (read/write)"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(intVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            if (intVal<0)
+            {
+                LOG_ERR_OPT<<"invalid value"<<"\n";
+            }
+
+            appConfig.ioTryCount = (unsigned)intVal;
+            
+            return 0;
+        }
+
+        else if ( opt.setParam("N", umba::command_line::OptionType::optInt)
+               || opt.isOption("io-try-delay") // || opt.isOption('T')
+               || opt.setDescription("Set delay between I/O attempts (read/write)"))
+        {
+            if (argsParser.hasHelpOption) return 0;
+
+            if (!opt.getParamValue(intVal,errMsg))
+            {
+                LOG_ERR_OPT<<errMsg<<"\n";
+                return -1;
+            }
+
+            if (intVal<0)
+            {
+                LOG_ERR_OPT<<"invalid value"<<"\n";
+            }
+
+            appConfig.ioDelay = (unsigned)intVal;
+            
+            return 0;
+        }
+
         else if (opt.isHelpStyleOption())
         {
             // Job is done in isHelpStyleOption

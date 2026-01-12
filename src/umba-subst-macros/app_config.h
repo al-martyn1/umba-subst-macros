@@ -84,17 +84,19 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
 */
 
     //------------------------------
-    umba::macros::StringStringMap<std::string> macros;
-    std::list< std::string >                 macrosOrder;
-    std::map<std::string,bool>               expandedMacros;
+    umba::macros::StringStringMap<std::string>         macros;
+    std::list< std::string >                           macrosOrder;
+    std::map<std::string,bool>                         expandedMacros;
 
     std::vector< std::pair<std::string,std::string> >  rawSubstitutions;
 
+    unsigned                                           ioTryCount = 0;
+    unsigned                                           ioDelay    = 100;
 
 
-    unsigned                                 optionFlags = ofKeepUnknown; // 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
+    unsigned                                           optionFlags = ofKeepUnknown; // 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
 
-    VerbosityLevel                           verbosityLevel = VerbosityLevel::normal;
+    VerbosityLevel                                     verbosityLevel = VerbosityLevel::normal;
 
     // std::string                              inputFilename;
     // std::string                              outputFilename;
@@ -303,6 +305,9 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
 
         appConfig.optionFlags        = optionFlags;
         appConfig.verbosityLevel     = verbosityLevel;
+        appConfig.ioTryCount         = ioTryCount;
+        appConfig.ioDelay            = ioDelay   ;
+
 
     // std::pair<std::string,std::string>       rawSubstitutions;
     // unsigned                                 optionFlags = ofKeepUnknown; // 0; // ofNormalizeFilenames; // ofEmptyOptionFlags;
