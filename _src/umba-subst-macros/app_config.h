@@ -10,9 +10,12 @@
 #include "umba/program_location.h"
 #include "umba/enum_helpers.h"
 #include "umba/flag_helpers.h"
-
+#include "umba/string_plus.h"
 #include "umba/macros.h"
 #include "umba/macro_helpers.h"
+//
+
+#include "marty_cpp/marty_cpp.h"
 
 
 //----------------------------------------------------------------------------
@@ -248,6 +251,20 @@ const int keepUnknownVars                     = smf_KeepUnknownVars             
         expandedMacros[name] = true;
         macros[name]         = val;
 
+    }
+
+    void setMacro(const std::string &nameValPair, bool deffered, bool unescape, char sepChar)
+    {
+        std::string name, val;
+        umba::string_plus::split_to_pair(nameValPair, name, val, sepChar);
+
+        if (unescape)
+        {
+            name = marty_cpp::cUnescapeString(name);
+            val  = marty_cpp::cUnescapeString(val );
+        }
+
+        setMacro( name, val, false /* deffered */ );
     }
 
 
